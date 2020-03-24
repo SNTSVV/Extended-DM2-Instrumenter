@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout n1:orientation="horizontal" n1:background="@drawable/background_alternate_even" n1:layout_width="fill_parent" n1:layout_height="wrap_content" n1:baselineAligned="false"
+  xmlns:n1="http://schemas.android.com/apk/res/android">
+    <TextView n1:gravity="center" n1:layout_gravity="center_vertical" n1:id="@id/forecast_hour_start" n1:layout_width="0.0dip" n1:layout_height="wrap_content" n1:layout_weight="1.0" />
+    <LinearLayout n1:orientation="vertical" n1:layout_width="0.0dip" n1:layout_height="wrap_content" n1:layout_weight="4.0">
+        <LinearLayout n1:orientation="horizontal" n1:background="@drawable/background_linear_dark_blue" n1:layout_width="fill_parent" n1:layout_height="wrap_content">
+            <TextView n1:textSize="@dimen/text_size_very_large" n1:gravity="start" n1:layout_gravity="center_vertical" n1:id="@id/temperature_text_view" n1:paddingLeft="@dimen/padding_very_large" n1:paddingRight="@dimen/padding_very_large" n1:layout_width="0.0dip" n1:layout_height="wrap_content" n1:drawableLeft="@drawable/ic_action_temperature" n1:layout_weight="4.0" n1:drawableStart="@drawable/ic_action_temperature" />
+            <LinearLayout n1:gravity="center_vertical" n1:orientation="vertical" n1:paddingTop="@dimen/padding_medium" n1:paddingBottom="@dimen/padding_medium" n1:layout_width="0.0dip" n1:layout_height="wrap_content" n1:layout_weight="3.0">
+                <ImageView n1:layout_gravity="center_horizontal" n1:id="@id/weather_conditions_image_view" n1:padding="0.0dip" n1:layout_width="@dimen/icon_dimension_horizontal" n1:layout_height="@dimen/icon_dimension_vertical" n1:layout_marginLeft="@dimen/gap_large" n1:layout_marginRight="@dimen/gap_large" n1:contentDescription="@string/icon_content_description_weather_conditions" n1:layout_marginStart="@dimen/gap_large" n1:layout_marginEnd="@dimen/gap_large" />
+                <TextView n1:textSize="@dimen/text_size_medium" n1:gravity="center" n1:layout_gravity="center_horizontal" n1:id="@id/weather_conditions_text_view" n1:layout_width="fill_parent" n1:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout n1:orientation="vertical" n1:background="?themed_gradient_drawable" n1:layout_width="fill_parent" n1:layout_height="wrap_content" n1:layout_marginTop="@dimen/gap_small" n1:layout_marginBottom="@dimen/gap_small">
+            <LinearLayout n1:orientation="horizontal" n1:layout_width="fill_parent" n1:layout_height="wrap_content">
+                <TextView n1:id="@id/atmospheric_pressure_text_view" n1:layout_width="0.0dip" n1:layout_height="wrap_content" n1:layout_weight="1.0" style="@style/TextView.SmallText" />
+                <TextView n1:id="@id/humidity_text_view" n1:layout_width="0.0dip" n1:layout_height="wrap_content" n1:layout_weight="1.0" style="@style/TextView.SmallText" />
+            </LinearLayout>
+            <LinearLayout n1:layout_gravity="center_horizontal" n1:orientation="horizontal" n1:padding="@dimen/padding_small" n1:layout_width="wrap_content" n1:layout_height="wrap_content">
+                <ImageView n1:layout_width="@dimen/icon_dimension_horizontal" n1:layout_height="fill_parent" n1:src="@drawable/wind" n1:scaleType="centerCrop" n1:contentDescription="@string/icon_content_description_wind" />
+                <TextView n1:gravity="start" n1:layout_gravity="center_horizontal" n1:id="@id/wind_text_view" n1:paddingLeft="0.0dip" n1:layout_width="wrap_content" n1:layout_height="wrap_content" n1:paddingStart="0.0dip" style="@style/TextView.SmallText" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

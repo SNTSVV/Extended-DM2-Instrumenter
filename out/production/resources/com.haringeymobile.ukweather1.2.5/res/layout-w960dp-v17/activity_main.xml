@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout n1:orientation="vertical" n1:layout_width="fill_parent" n1:layout_height="fill_parent"
+  xmlns:n1="http://schemas.android.com/apk/res/android">
+    <include layout="@layout/general_toolbar" />
+    <LinearLayout n1:orientation="horizontal" n1:layout_width="fill_parent" n1:layout_height="fill_parent" n1:baselineAligned="false" style="@style/BlueBackground">
+        <FrameLayout n1:id="@id/city_list_container" n1:layout_width="0.0dip" n1:layout_height="fill_parent" n1:layout_weight="1.0" />
+        <FrameLayout n1:id="@id/weather_info_container" n1:layout_width="0.0dip" n1:layout_height="fill_parent" n1:layout_marginLeft="@dimen/gap_medium" n1:layout_marginTop="@dimen/activity_vertical_margin" n1:layout_marginBottom="@dimen/activity_vertical_margin" n1:layout_weight="1.0" n1:layout_marginStart="@dimen/gap_medium" />
+    </LinearLayout>
+</LinearLayout>

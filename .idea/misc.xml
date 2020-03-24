@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="ProjectPlainTextFileTypeManager">
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/ActivityEvent.kt" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/GatorAnalysisEntrypoint.kt" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/GUIUserInteractionClient.kt" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/PathGenerationClient.kt" />
+    <file url="file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/PrerunEntrypoint.kt" />
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/classes" />
+  </component>
+</project>

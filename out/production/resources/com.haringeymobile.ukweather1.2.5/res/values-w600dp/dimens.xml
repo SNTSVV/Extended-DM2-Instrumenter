@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="activity_horizontal_margin">20.0dip</dimen>
+    <dimen name="activity_vertical_margin">24.0dip</dimen>
+    <dimen name="gap_inside_general_button_large">8.0dip</dimen>
+    <dimen name="gap_inside_general_button_small">5.0dip</dimen>
+    <dimen name="gap_large">20.0dip</dimen>
+    <dimen name="gap_medium">13.0dip</dimen>
+    <dimen name="gap_small">8.0dip</dimen>
+    <dimen name="icon_dimension_horizontal">60.0dip</dimen>
+    <dimen name="icon_dimension_vertical">45.0dip</dimen>
+    <dimen name="list_divider_height">14.0dip</dimen>
+    <item type="dimen" name="padding_general_clickable_large">@dimen/padding_large</item>
+    <item type="dimen" name="padding_general_clickable_small">@dimen/padding_medium</item>
+    <dimen name="padding_large">15.0dip</dimen>
+    <dimen name="padding_medium">10.0dip</dimen>
+    <dimen name="padding_small">6.0dip</dimen>
+    <dimen name="padding_very_large">22.0dip</dimen>
+    <dimen name="shape_padding">8.0dip</dimen>
+    <dimen name="shape_stroke_width">7.0dip</dimen>
+    <dimen name="text_size_large">36.0sp</dimen>
+    <dimen name="text_size_medium">26.0sp</dimen>
+    <dimen name="text_size_small">18.0sp</dimen>
+    <dimen name="text_size_very_large">48.0sp</dimen>
+    <dimen name="text_size_very_small">13.0sp</dimen>
+</resources>

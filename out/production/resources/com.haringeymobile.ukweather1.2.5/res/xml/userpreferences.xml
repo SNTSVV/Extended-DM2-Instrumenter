@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen>
+    <com.haringeymobile.ukweather.settings.CustomListPreference n1:entries="@array/pref_temperature_scale_titles" n1:title="@string/pref_temperature_scale_title" n1:key="temperature_scale" n1:summary="@string/pref_temperature_scale_summary" n1:defaultValue="@string/pref_temperature_scale_id_default" n1:entryValues="@array/pref_temperature_scale_values"
+      xmlns:n1="http://schemas.android.com/apk/res/android" />
+    <com.haringeymobile.ukweather.settings.CustomListPreference n2:entries="@array/pref_wind_speed_unit_titles" n2:title="@string/pref_wind_speed_unit_title" n2:key="wind_speed_measurement_unit" n2:summary="@string/pref_wind_speed_unit_summary" n2:defaultValue="@string/pref_wind_speed_unit_id_default" n2:entryValues="@array/pref_wind_speed_unit_id_values"
+      xmlns:n2="http://schemas.android.com/apk/res/android" />
+    <CheckBoxPreference n3:title="@string/pref_wind_direction_display_title" n3:key="wind_direction_display" n3:summary="@string/pref_wind_direction_display_summary" n3:defaultValue="true"
+      xmlns:n3="http://schemas.android.com/apk/res/android" />
+    <com.haringeymobile.ukweather.settings.CustomListPreference n4:entries="@array/pref_data_cache_period_titles" n4:title="@string/pref_data_cache_period_title" n4:key="data_cache_period" n4:summary="@string/pref_data_cache_period_summary" n4:defaultValue="@string/pref_data_cache_period_default" n4:entryValues="@array/pref_data_cache_period_values"
+      xmlns:n4="http://schemas.android.com/apk/res/android" />
+    <com.haringeymobile.ukweather.settings.AppThemeListPreference n5:entries="@array/pref_theme_names" n5:title="@string/pref_app_theme_title" n5:key="app_theme" n5:summary="@string/pref_app_theme_summary" n5:defaultValue="@string/pref_app_theme_default" n5:entryValues="@array/pref_theme_values" n6:entryColors="@array/pref_color_values"
+      xmlns:n5="http://schemas.android.com/apk/res/android"
+      xmlns:n6="http://schemas.android.com/apk/res/com.haringeymobile.ukweather" />
+    <com.haringeymobile.ukweather.settings.CustomListPreference n7:entries="@array/pref_forecast_display_mode_titles" n7:title="@string/pref_forecast_display_mode_title" n7:key="forecast_display_mode" n7:summary="@string/pref_forecast_display_mode_summary" n7:defaultValue="@string/pref_forecast_display_mode_id_default" n7:entryValues="@array/pref_forecast_display_mode_values"
+      xmlns:n7="http://schemas.android.com/apk/res/android" />
+    <com.haringeymobile.ukweather.settings.CustomListPreference n8:entries="@array/pref_city_removal_mode_titles" n8:title="@string/pref_city_removal_mode_title" n8:key="city_removal_mode" n8:summary="@string/pref_city_removal_mode_summary" n8:defaultValue="@string/pref_city_removal_mode_id_default" n8:entryValues="@array/pref_city_removal_mode_values"
+      xmlns:n8="http://schemas.android.com/apk/res/android" />
+    <com.haringeymobile.ukweather.settings.CustomListPreference n9:entries="@array/app_languages" n9:title="@string/pref_language_title" n9:key="app_language" n9:summary="@string/pref_language_summary" n9:defaultValue="@string/pref_app_language_default" n9:entryValues="@array/pref_languages_values"
+      xmlns:n9="http://schemas.android.com/apk/res/android" />
+    <CheckBoxPreference n10:title="@string/pref_personal_api_key_title" n10:key="personal_api_key" n10:summary="@string/pref_personal_api_key_summary" n10:defaultValue="false"
+      xmlns:n10="http://schemas.android.com/apk/res/android" />
+</PreferenceScreen>

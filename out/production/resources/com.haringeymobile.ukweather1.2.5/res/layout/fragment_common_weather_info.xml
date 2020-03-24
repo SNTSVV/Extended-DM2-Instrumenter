@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView n1:background="@drawable/background_radial_dark_blue" n1:layout_width="fill_parent" n1:layout_height="fill_parent" n1:fillViewport="true"
+  xmlns:n1="http://schemas.android.com/apk/res/android">
+    <LinearLayout n1:gravity="center" n1:orientation="vertical" n1:layout_width="fill_parent" n1:layout_height="wrap_content">
+        <include n1:layout_width="fill_parent" n1:layout_height="wrap_content" n1:layout_marginTop="@dimen/gap_large" n1:layout_marginBottom="@dimen/gap_large" layout="@layout/merged_temperature_and_city_views" />
+        <include n1:layout_width="fill_parent" n1:layout_height="wrap_content" n1:layout_marginTop="@dimen/gap_large" n1:layout_marginBottom="@dimen/gap_large" layout="@layout/merged_weather_condition_views" />
+        <include n1:layout_width="fill_parent" n1:layout_height="wrap_content" n1:layout_marginTop="@dimen/gap_large" n1:layout_marginBottom="@dimen/gap_large" layout="@layout/merged_pressure_humidity_and_wind_views" />
+    </LinearLayout>
+</ScrollView>

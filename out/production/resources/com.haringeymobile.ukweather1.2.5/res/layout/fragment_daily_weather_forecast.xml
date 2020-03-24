@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView n1:background="@drawable/background_radial_dark_blue" n1:layout_width="fill_parent" n1:layout_height="fill_parent" n1:fillViewport="true"
+  xmlns:n1="http://schemas.android.com/apk/res/android">
+    <LinearLayout n1:gravity="center" n1:orientation="vertical" n1:layout_width="fill_parent" n1:layout_height="wrap_content">
+        <LinearLayout n1:orientation="vertical" n1:background="@drawable/background_alternate_even" n1:layout_width="fill_parent" n1:layout_height="wrap_content" n1:layout_marginTop="@dimen/gap_small" n1:layout_marginBottom="@dimen/gap_small">
+            <include n1:layout_width="fill_parent" n1:layout_height="wrap_content" layout="@layout/merged_temperature_and_city_views" />
+            <LinearLayout n1:orientation="horizontal" n1:layout_width="fill_parent" n1:layout_height="wrap_content">
+                <TextView n1:gravity="end" n1:id="@id/night_morning_evening_title" n1:layout_width="0.0dip" n1:layout_height="wrap_content" n1:layout_weight="1.0" style="@style/TextView.SmallText" />
+                <TextView n1:gravity="start" n1:id="@id/night_morning_evening_temperatures_text_view" n1:layout_width="0.0dip" n1:layout_height="wrap_content" n1:drawableLeft="@drawable/ic_action_temperature" n1:layout_weight="1.0" n1:drawableStart="@drawable/ic_action_temperature" style="@style/TextView.SmallText" />
+            </LinearLayout>
+        </LinearLayout>
+        <include n1:layout_width="fill_parent" n1:layout_height="wrap_content" n1:layout_marginTop="@dimen/gap_small" n1:layout_marginBottom="@dimen/gap_small" layout="@layout/merged_weather_condition_views" />
+        <include n1:layout_width="fill_parent" n1:layout_height="wrap_content" n1:layout_marginTop="@dimen/gap_small" n1:layout_marginBottom="@dimen/gap_small" layout="@layout/merged_pressure_humidity_and_wind_views" />
+    </LinearLayout>
+</ScrollView>

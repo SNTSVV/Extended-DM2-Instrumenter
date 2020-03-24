@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout n1:orientation="vertical" n1:layout_width="fill_parent" n1:layout_height="wrap_content" n1:layout_margin="@dimen/gap_medium"
+  xmlns:n1="http://schemas.android.com/apk/res/android">
+    <TextView n1:textSize="@dimen/text_size_large" n1:textColor="@color/yellow" n1:gravity="center" n1:id="@id/city_search_dialog_title" n1:background="@drawable/background_radial_dark_blue" n1:padding="@dimen/padding_large" n1:layout_width="fill_parent" n1:layout_height="wrap_content" n1:layout_marginBottom="@dimen/gap_medium" n1:textIsSelectable="false" />
+    <android.support.v7.widget.RecyclerView n1:scrollbarStyle="outsideOverlay" n1:id="@id/general_recycler_view" n1:background="@drawable/background_blue_with_linear_gradient" n1:padding="@dimen/padding_large" n1:scrollbars="vertical" n1:layout_width="fill_parent" n1:layout_height="wrap_content" />
+</LinearLayout>

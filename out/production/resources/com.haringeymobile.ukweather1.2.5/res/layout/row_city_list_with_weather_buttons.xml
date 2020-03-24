@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout n1:orientation="vertical" n1:layout_width="fill_parent" n1:layout_height="fill_parent"
+  xmlns:n1="http://schemas.android.com/apk/res/android">
+    <TextView n1:id="@id/city_name_in_list_row_text_view" n1:layout_width="fill_parent" n1:layout_height="fill_parent" n1:textIsSelectable="false" style="@style/TextView.VeryLargeText" />
+    <LinearLayout n1:orientation="horizontal" n1:layout_width="fill_parent" n1:layout_height="wrap_content" n1:baselineAligned="false">
+        <LinearLayout n1:orientation="horizontal" n1:id="@id/city_current_weather_button" n1:layout_width="0.0dip" n1:layout_height="fill_parent" n1:layout_margin="@dimen/gap_small" n1:layout_weight="1.0" style="@style/GeneralClickable">
+            <ImageView n1:layout_gravity="center_vertical" n1:layout_width="0.0dip" n1:layout_height="fill_parent" n1:layout_margin="@dimen/gap_inside_general_button_small" n1:src="@drawable/ic_assignment_returned" n1:layout_weight="1.0" style="@style/ClickableImageView" />
+            <TextView n1:layout_gravity="center_vertical" n1:layout_width="0.0dip" n1:layout_height="wrap_content" n1:layout_margin="@dimen/gap_inside_general_button_small" n1:text="@string/button_text_current_weather_conditions" n1:layout_weight="3.0" style="@style/ClickableTextView" />
+        </LinearLayout>
+        <LinearLayout n1:orientation="horizontal" n1:id="@id/city_daily_weather_forecast_button" n1:layout_width="0.0dip" n1:layout_height="wrap_content" n1:layout_margin="@dimen/gap_small" n1:layout_weight="1.0" style="@style/GeneralClickable">
+            <ImageView n1:layout_gravity="center_vertical" n1:layout_width="0.0dip" n1:layout_height="fill_parent" n1:layout_margin="@dimen/gap_inside_general_button_small" n1:src="@drawable/ic_octicon_calendar" n1:layout_weight="1.0" style="@style/ClickableImageView" />
+            <TextView n1:layout_gravity="center_vertical" n1:layout_width="0.0dip" n1:layout_height="wrap_content" n1:layout_margin="@dimen/gap_inside_general_button_small" n1:text="@string/button_text_weather_forecast_daily" n1:layout_weight="3.0" style="@style/ClickableTextView" />
+        </LinearLayout>
+        <LinearLayout n1:orientation="horizontal" n1:id="@id/city_three_hourly_weather_forecast_button" n1:layout_width="0.0dip" n1:layout_height="wrap_content" n1:layout_margin="@dimen/gap_small" n1:layout_weight="1.0" style="@style/GeneralClickable">
+            <ImageView n1:layout_gravity="center_vertical" n1:layout_width="0.0dip" n1:layout_height="fill_parent" n1:layout_margin="@dimen/gap_inside_general_button_small" n1:src="@drawable/ic_assignment" n1:layout_weight="1.0" style="@style/ClickableImageView" />
+            <TextView n1:layout_gravity="center_vertical" n1:layout_width="0.0dip" n1:layout_height="wrap_content" n1:layout_margin="@dimen/gap_inside_general_button_small" n1:text="@string/button_text_weather_forecast_3_hourly" n1:layout_weight="3.0" style="@style/ClickableTextView" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
