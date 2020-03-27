@@ -61,6 +61,7 @@ import org.droidmate.Hierarchy
 import org.json.JSONArray
 import soot.Body
 import soot.BodyTransformer
+import soot.G
 import soot.IntType
 import soot.Modifier
 import soot.PackManager
@@ -73,6 +74,7 @@ import soot.SootMethodRef
 import soot.Transform
 import soot.Type
 import soot.VoidType
+import soot.dexpler.DexResolver
 import soot.jimple.InvokeStmt
 import soot.jimple.Jimple
 import soot.jimple.internal.JReturnStmt
@@ -119,23 +121,23 @@ public class Instrumenter @JvmOverloads constructor(
                 val apkPath = Paths.get(cfg[apk].path)
                 val onlyAppPackage = cfg[onlyAppPackage]
                 val printToLogcat = cfg[printToLogcat]
-                val apkFile = if (Files.isDirectory(apkPath)) {
+                val apkFiles: List<Path> = if (Files.isDirectory(apkPath)) {
                     Files.list(apkPath)
                         .asSequence()
                         .filter { it.fileName.toString().endsWith(".apk") }
-                        .filterNot { it.fileName.toString().endsWith("-instrumented.apk") }
-                        .first()
+                        .filterNot { it.fileName.toString().endsWith("-instrumented.apk") }.toList()
                 } else {
-                    apkPath
-                }.toAbsolutePath()
-                assert(Files.isRegularFile(apkFile))
+                    listOf(apkPath.toAbsolutePath())
+                }
+                assert(apkFiles.isNotEmpty())
 
                 val dstDir = if (cfg[outputDir].path == "./") {
-                    apkFile.parent
+                    apkFiles.first().parent
                 } else {
                     Paths.get(cfg[outputDir].path)
                 }
-
+                val apkFile = apkFiles.first()
+                assert(Files.isRegularFile(apkFile))
                 val stagingDir = Files.createTempDirectory("staging")
                 val instrumentationResult = try {
                     val apk = Apk.fromFile(apkFile)
@@ -254,7 +256,8 @@ public class Instrumenter @JvmOverloads constructor(
             val sootDir = workDir.resolve("soot")
 //            configSoot(apk.path, sootDir)
             configSoot(tmpOutApk, sootDir)
-            readAppDiffFile(apk.path.toString().replace(".apk", "-diff.json"), apk.packageName)
+            val diffFile = Files.list(apk.path.parent).filter { it.fileName.toString().contains(apk.packageName) && it.fileName.toString().endsWith("-diff.json") }.findFirst().orElse(null)
+            readAppDiffFile(diffFile.toAbsolutePath().toString(), apk.packageName)
             val instrumentedApk = instrumentAndSign(apk, sootDir)
             val outputApk = outputDir.resolve(
                 instrumentedApk.fileName.toString()
@@ -283,7 +286,7 @@ public class Instrumenter @JvmOverloads constructor(
         Options.v().set_validate(true)
         Options.v().set_output_format(Options.output_format_dex)
         Options.v().set_include_all(true)
-        Options.v().set_whole_program(true)
+        //Options.v().set_whole_program(true)
         PhaseOptions.v().setPhaseOption("jb.tt", "enabled:false")
         PhaseOptions.v().setPhaseOption("jb.uce", "enabled:false")
         PhaseOptions.v().setPhaseOption("jj.uce", "enabled:false")
@@ -305,15 +308,15 @@ public class Instrumenter @JvmOverloads constructor(
         Resource("libPackages.txt").extractTo(stagingDir)
         libraryPackageFile = stagingDir.resolve("libPackages.txt").toString()
         processLibraryPkgFile()
-        // Options.v().set_exclude(getLibraryPackage())
+        //Options.v().set_exclude(getLibraryPackage())
         processDirs.add(resourceDir.toString())
 
         // Consider using multiplex, but it crashed for some apps
-        // Options.v().set_process_multiple_dex(true)
+        Options.v().set_process_multiple_dex(true)
         Options.v().set_process_dir(processDirs)
         Options.v().set_android_jars("ANDROID_HOME".asEnvDir.resolve("platforms").toString())
         Options.v().set_force_overwrite(true)
-//        Options.v().set_android_api_version(25)
+//      Options.v().set_android_api_version(27)
         Scene.v().loadNecessaryClasses()
 
         runtime = Runtime.v(
@@ -393,7 +396,7 @@ public class Instrumenter @JvmOverloads constructor(
                             ) {
                                 // Perform instrumentation here
 
-                                log.info("Method $methodSig:")
+                                //log.info("Method $methodSig:")
 
                                 var methodUuid: UUID? = null
                                 if (methodUuid == null) {
@@ -808,6 +811,7 @@ public class Instrumenter @JvmOverloads constructor(
             val declaredClass = Scene.v().getMethod(sootSignature).declaringClass
             if (isLibraryClass(declaredClass.name))
                 continue
+
             modifiedMethods.add(sootSignature)
         }
     }
