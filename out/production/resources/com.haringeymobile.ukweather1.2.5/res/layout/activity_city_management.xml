@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout n1:orientation="vertical" n1:layout_width="fill_parent" n1:layout_height="fill_parent" style="@style/ActivityBackground"
-  xmlns:n1="http://schemas.android.com/apk/res/android">
-    <include layout="@layout/general_toolbar" />
-    <FrameLayout n1:layout_width="fill_parent" n1:layout_height="fill_parent" style="@style/BlueBackground">
-        <fragment n1:id="@id/city_list_container" n1:layout_width="fill_parent" n1:layout_height="fill_parent" class="com.haringeymobile.ukweather.CityListFragmentWithUtilityButtons" />
-    </FrameLayout>
-</LinearLayout>

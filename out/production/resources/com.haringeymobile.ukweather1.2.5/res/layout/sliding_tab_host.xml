@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout n1:background="@drawable/background_radial_dark_blue" n1:layout_width="fill_parent" n1:layout_height="fill_parent"
-  xmlns:n1="http://schemas.android.com/apk/res/android">
-    <com.astuetz.PagerSlidingTabStrip n1:id="@id/tabs" n1:background="?themed_round_drawable" n1:layout_width="fill_parent" n1:layout_height="48.0dip" n2:pstsIndicatorColor="@color/blue3" n2:pstsTextAllCaps="false" xmlns:n2="http://schemas.android.com/apk/res-auto" />
-    <android.support.v4.view.ViewPager n1:id="@id/pager" n1:layout_width="fill_parent" n1:layout_height="wrap_content" n1:layout_below="@id/tabs" />
-</RelativeLayout>

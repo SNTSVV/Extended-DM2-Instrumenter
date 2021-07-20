@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout n1:gravity="center_horizontal" n1:orientation="horizontal" n1:layout_width="fill_parent" n1:layout_height="wrap_content"
-  xmlns:n1="http://schemas.android.com/apk/res/android">
-    <ImageView n1:id="@id/drag_handle" n1:background="@drawable/ic_drag_handle" n1:layout_width="wrap_content" n1:layout_height="wrap_content" n1:layout_margin="@dimen/gap_medium" />
-    <TextView n1:id="@id/city_name_in_list_row_text_view" n1:layout_width="0.0dip" n1:layout_height="fill_parent" n1:layout_weight="1.0" n1:textIsSelectable="false" style="@style/TextView.LargeText" />
-    <ImageView n1:id="@id/city_rename_button" n1:background="@drawable/ic_edit" n1:layout_width="wrap_content" n1:layout_height="wrap_content" n1:layout_margin="@dimen/gap_medium" />
-    <ImageView n1:id="@id/city_remove_button" n1:background="@drawable/ic_delete" n1:layout_width="wrap_content" n1:layout_height="wrap_content" n1:layout_margin="@dimen/gap_medium" />
-</LinearLayout>

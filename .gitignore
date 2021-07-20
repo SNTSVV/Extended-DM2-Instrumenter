@@ -4,3 +4,4 @@ apk
 build
 instrumentedApks
 build
+.DS_Store

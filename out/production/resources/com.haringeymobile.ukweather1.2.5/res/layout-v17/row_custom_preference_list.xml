@@ -1,3 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<CheckedTextView n1:id="@id/text1" n1:layout_width="fill_parent" n1:layout_height="wrap_content" n1:layout_marginLeft="@dimen/gap_small" n1:layout_marginStart="@dimen/gap_small" style="@style/CheckedPreference"
-  xmlns:n1="http://schemas.android.com/apk/res/android" />

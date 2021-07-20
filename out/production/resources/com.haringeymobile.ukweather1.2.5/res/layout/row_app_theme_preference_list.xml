@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout n1:orientation="horizontal" n1:paddingLeft="@dimen/gap_small" n1:layout_width="fill_parent" n1:layout_height="wrap_content"
-  xmlns:n1="http://schemas.android.com/apk/res/android">
-    <View n1:id="@id/app_theme_color" n1:background="@drawable/background_transparent_round" n1:layout_width="0.0dip" n1:layout_height="fill_parent" n1:layout_margin="@dimen/gap_small" n1:layout_weight="1.0" />
-    <CheckedTextView n1:id="@id/app_theme_name" n1:layout_width="0.0dip" n1:layout_height="fill_parent" n1:layout_weight="3.0" style="@style/CheckedPreference" />
-</LinearLayout>

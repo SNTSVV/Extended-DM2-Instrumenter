@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout n1:orientation="vertical" n1:layout_width="fill_parent" n1:layout_height="fill_parent" style="@style/ActivityBackground"
-  xmlns:n1="http://schemas.android.com/apk/res/android">
-    <include layout="@layout/general_toolbar" />
-    <FrameLayout n1:id="@id/weather_info_container" n1:tag="@string/weather_info_frame_layout_pane_number_tag" n1:layout_width="fill_parent" n1:layout_height="fill_parent" />
-</LinearLayout>

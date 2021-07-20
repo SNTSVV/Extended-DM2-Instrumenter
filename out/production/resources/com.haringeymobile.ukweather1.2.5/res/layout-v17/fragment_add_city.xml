@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout n1:orientation="vertical" n1:padding="@dimen/gap_large" n1:layout_width="fill_parent" n1:layout_height="fill_parent"
-  xmlns:n1="http://schemas.android.com/apk/res/android">
-    <LinearLayout n1:orientation="horizontal" n1:layout_width="fill_parent" n1:layout_height="wrap_content" n1:layout_marginBottom="@dimen/gap_large">
-        <EditText n1:textSize="@dimen/text_size_large" n1:id="@id/ac_search_edit_text" n1:layout_width="0.0dip" n1:layout_height="fill_parent" n1:hint="@string/city_add_hint" n1:layout_weight="1.0" />
-        <ImageButton n1:layout_gravity="end" n1:id="@id/ac_search_button" n1:paddingLeft="@dimen/padding_very_large" n1:paddingRight="@dimen/padding_very_large" n1:layout_width="@dimen/icon_dimension_horizontal" n1:layout_height="fill_parent" n1:layout_marginLeft="@dimen/gap_small" n1:src="@drawable/ic_action_search" n1:layout_marginStart="@dimen/gap_small" />
-    </LinearLayout>
-    <TextView n1:textSize="@dimen/text_size_small" n1:layout_gravity="center_horizontal" n1:id="@id/ac_info_text_view" n1:scrollbars="vertical" n1:layout_width="wrap_content" n1:layout_height="wrap_content" />
-</LinearLayout>
