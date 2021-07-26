@@ -9,74 +9,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4064df3f-5f55-43f2-96a1-f85d289cfd4c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/META-INF/coverage.kotlin_module" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/ApkContentManager$Companion.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/ApkContentManager.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/coverage/CommandLineConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/coverage/CommandLineConfigBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/coverage/Instrumenter$Companion$log$2.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/coverage/Instrumenter$Companion.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/coverage/Instrumenter$ITransformer$1$internalTransform$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/coverage/Instrumenter$ITransformer$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/coverage/Instrumenter$ITransformer.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/coverage/Instrumenter.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/coverage/JavaSignatureFormatter$SignatureFormatterResult.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/coverage/JavaSignatureFormatter.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/coverage/NewApkContentManager$Companion.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/coverage/NewApkContentManager.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/helpClasses/Helper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/instrumentation/Runtime$Companion.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/instrumentation/Runtime$addCurrentWidgetPointMethod$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/instrumentation/Runtime$runtimeClass$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/instrumentation/Runtime$setCurrentActivityPointMethod$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/instrumentation/Runtime$statementPointMethod$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/instrumentation/Runtime.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/manifest/ManifestConstants.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/kotlin/main/org/droidmate/manifest/ManifestInstrumenter.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/gator-1.0-SNAPSHOT.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/soot-3.0.1-jar-with-dependencies.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/soot-infoflow-android-2.7-20181130.134847-10.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/libPackages.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/listeners.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/apk-guiAnalysis.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-10/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-11/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-12/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-13/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-14/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-15/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-16/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-17/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-18/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-19/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-20/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-21/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-22/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-23/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-24/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-25/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-26/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-27/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-28/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/android-28/com_android_internal_R_28" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/com_android_internal_R" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/com_android_internal_R_BK" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/consts/widgetMap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/extractClassNames.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/extractWidgetTypes.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/guiAnalysis.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/guiAnalysisEx.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/scripts/jimple.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sootandroid/wtg.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/JavaSignatureFormatter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/JavaSignatureFormatter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/NewApkContentManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/NewApkContentManager.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,16 +38,16 @@
             <expand>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="coverage" type="f1a62948:ProjectNode" />
+                <item name="extended-dm2-instrumenter" type="f1a62948:ProjectNode" />
               </path>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="coverage" type="f1a62948:ProjectNode" />
+                <item name="extended-dm2-instrumenter" type="f1a62948:ProjectNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
               </path>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="coverage" type="f1a62948:ProjectNode" />
+                <item name="extended-dm2-instrumenter" type="f1a62948:ProjectNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
                 <item name="build" type="c8890929:TasksNode$1" />
               </path>
@@ -366,17 +302,17 @@
         <line-breakpoint enabled="true" type="kotlin-line">
           <condition expression="methodSig.contains(&quot;MainActivity&quot;)" language="kotlin" />
           <url>file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt</url>
-          <line>385</line>
+          <line>384</line>
           <option name="timeStamp" value="138" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt</url>
-          <line>970</line>
+          <line>969</line>
           <option name="timeStamp" value="143" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt</url>
-          <line>527</line>
+          <line>526</line>
           <option name="timeStamp" value="144" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">

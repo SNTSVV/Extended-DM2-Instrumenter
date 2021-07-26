@@ -48,7 +48,6 @@ import org.droidmate.Hierarchy
 import org.json.JSONArray
 import soot.Body
 import soot.BodyTransformer
-import soot.G
 import soot.IntType
 import soot.Modifier
 import soot.PackManager
@@ -61,7 +60,6 @@ import soot.SootMethodRef
 import soot.Transform
 import soot.Type
 import soot.VoidType
-import soot.dexpler.DexResolver
 import soot.jimple.InvokeStmt
 import soot.jimple.Jimple
 import soot.jimple.internal.JReturnStmt
@@ -273,7 +271,6 @@ public class Instrumenter @JvmOverloads constructor(
         Options.v().set_validate(true)
         Options.v().set_output_format(Options.output_format_dex)
         Options.v().set_include_all(true)
-        //Options.v().set_whole_program(true)
         PhaseOptions.v().setPhaseOption("jb.tt", "enabled:false")
         PhaseOptions.v().setPhaseOption("jb.uce", "enabled:false")
         PhaseOptions.v().setPhaseOption("jj.uce", "enabled:false")
@@ -295,7 +292,7 @@ public class Instrumenter @JvmOverloads constructor(
         Resource("libPackages.txt").extractTo(stagingDir)
         libraryPackageFile = stagingDir.resolve("libPackages.txt").toString()
         processLibraryPkgFile()
-        //Options.v().set_exclude(getLibraryPackage())
+        // Options.v().set_exclude(getLibraryPackage())
         processDirs.add(resourceDir.toString())
 
         // Consider using multiplex, but it crashed for some apps
@@ -383,7 +380,7 @@ public class Instrumenter @JvmOverloads constructor(
                             ) {
                                 // Perform instrumentation here
 
-                                //log.info("Method $methodSig:")
+                                // log.info("Method $methodSig:")
 
                                 var methodUuid: UUID? = null
                                 if (methodUuid == null) {
