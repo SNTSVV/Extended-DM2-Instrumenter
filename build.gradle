@@ -36,6 +36,7 @@ apply from: file("${rootProject.projectDir}/ktlint.gradle")
 repositories {
     maven { url = "https://soot-build.cs.uni-paderborn.de/nexus/repository/soot-release/" }
     maven { url = "https://soot-build.cs.uni-paderborn.de/nexus/repository/soot-snapshot/" }
+    maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
     mavenCentral()
     mavenLocal()
     maven { url = 'https://jitpack.io' }
@@ -103,7 +104,7 @@ dependencies {
 
     implementation "ca.mcgill.sable:soot:3.3.0"
     implementation "de.upb.cs.swt:heros:1.1.0"
-    implementation ("de.tud.sse:soot-infoflow-android:2.7.2-SNAPSHOT") {
+    implementation ("de.tud.sse:soot-infoflow-android:2.8") {
         // FlowDroid uses an older version of Soot, let's use the newest one!
         //exclude group: 'ca.mcgill.sable', module: 'soot'
         //exclude group: 'de.upd.cs.swt', module: 'heros'

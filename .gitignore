@@ -5,3 +5,5 @@ build
 instrumentedApks
 build
 .DS_Store
+.gradle
+build
