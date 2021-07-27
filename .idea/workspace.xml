@@ -9,10 +9,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4064df3f-5f55-43f2-96a1-f85d289cfd4c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -302,22 +299,22 @@
         <line-breakpoint enabled="true" type="kotlin-line">
           <condition expression="methodSig.contains(&quot;MainActivity&quot;)" language="kotlin" />
           <url>file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt</url>
-          <line>384</line>
+          <line>382</line>
           <option name="timeStamp" value="138" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt</url>
-          <line>969</line>
+          <line>967</line>
           <option name="timeStamp" value="143" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt</url>
-          <line>526</line>
+          <line>524</line>
           <option name="timeStamp" value="144" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt</url>
-          <line>245</line>
+          <line>243</line>
           <properties>
             <option name="lambda-ordinal" value="-1" />
           </properties>
