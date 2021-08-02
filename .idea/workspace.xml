@@ -10,6 +10,9 @@
   <component name="ChangeListManager">
     <list default="true" id="4064df3f-5f55-43f2-96a1-f85d289cfd4c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/coverageCommandLineConfig.properties" beforeDir="false" afterPath="$PROJECT_DIR$/coverageCommandLineConfig.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/org.droidmate/coverage/InstrumenterTest.kt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,6 +44,12 @@
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="extended-dm2-instrumenter" type="f1a62948:ProjectNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="extended-dm2-instrumenter" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="application" type="c8890929:TasksNode$1" />
               </path>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
@@ -86,13 +95,20 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="android.project.structure.last.selected" value="SDK Location" />
     <property name="android.project.structure.proportion" value="0.15" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/apks" />
     <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.2474227" />
     <property name="settings.editor.selected.configurable" value="project.scopes" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/apks" />
+      <recent name="$PROJECT_DIR$/benchmark-test/com.iven.musicplayergo" />
+      <recent name="$PROJECT_DIR$/benchmark-test/com.iven.musicplayer" />
+      <recent name="$PROJECT_DIR$/apk" />
+      <recent name="$PROJECT_DIR$/benchmark-test/app.reading.stoic.stoicreading" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/apk" />
       <recent name="$PROJECT_DIR$/apk-done" />
@@ -106,15 +122,8 @@
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="org.droidmate.coverage" />
     </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/benchmark-test/com.iven.musicplayergo" />
-      <recent name="$PROJECT_DIR$/benchmark-test/com.iven.musicplayer" />
-      <recent name="$PROJECT_DIR$/apk" />
-      <recent name="$PROJECT_DIR$/benchmark-test/app.reading.stoic.stoicreading" />
-      <recent name="$PROJECT_DIR$" />
-    </key>
   </component>
-  <component name="RunManager" selected="Gradle.dm2-coverage-modified [build]">
+  <component name="RunManager" selected="Gradle.dm2-coverage-modified [run]">
     <configuration name="apk-instrumentation [clean]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -222,8 +231,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.dm2-coverage-modified [build]" />
         <item itemvalue="Gradle.dm2-coverage-modified [run]" />
+        <item itemvalue="Gradle.dm2-coverage-modified [build]" />
         <item itemvalue="Gradle.apk-instrumentation [clean]" />
         <item itemvalue="Gradle.dm2-coverage-modified [publishToMavenLocal]" />
         <item itemvalue="Gradle.dm2-coverage-modified [publishMavenJavaPublicationToMavenLocal]" />
@@ -299,26 +308,18 @@
         <line-breakpoint enabled="true" type="kotlin-line">
           <condition expression="methodSig.contains(&quot;MainActivity&quot;)" language="kotlin" />
           <url>file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt</url>
-          <line>382</line>
+          <line>376</line>
           <option name="timeStamp" value="138" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt</url>
-          <line>967</line>
+          <line>802</line>
           <option name="timeStamp" value="143" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt</url>
-          <line>524</line>
+          <line>515</line>
           <option name="timeStamp" value="144" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt</url>
-          <line>243</line>
-          <properties>
-            <option name="lambda-ordinal" value="-1" />
-          </properties>
-          <option name="timeStamp" value="147" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

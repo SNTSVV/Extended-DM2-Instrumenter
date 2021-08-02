@@ -45,7 +45,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.droidmate.ApkContentManager
 import org.droidmate.Hierarchy
-import org.json.JSONArray
 import soot.Body
 import soot.BodyTransformer
 import soot.IntType
@@ -65,7 +64,6 @@ import soot.jimple.Jimple
 import soot.jimple.internal.JReturnStmt
 import soot.jimple.internal.JReturnVoidStmt
 import java.io.BufferedReader
-import java.io.File
 import java.io.FileReader
 import java.util.UUID
 import kotlin.collections.ArrayList
@@ -91,7 +89,6 @@ public class Instrumenter @JvmOverloads constructor(
         var allStatements = HashMap<Long, String>()
 
         // key: source value: hashMapOf(widget, events)
-        var modifiedMethods = ArrayList<String>()
         var widgetId_String = HashMap<String, String>()
 
         @JvmStatic
@@ -205,7 +202,6 @@ public class Instrumenter @JvmOverloads constructor(
         try {
             allMethods.clear()
             allStatements.clear()
-            modifiedMethods.clear()
 
             val apkToolDir = workDir.resolve("apkTool")
             Files.createDirectories(apkToolDir)
@@ -241,8 +237,6 @@ public class Instrumenter @JvmOverloads constructor(
             val sootDir = workDir.resolve("soot")
 //            configSoot(apk.path, sootDir)
             configSoot(tmpOutApk, sootDir)
-            val diffFile = Files.list(apk.path.parent).filter { it.fileName.toString().contains(apk.packageName) && it.fileName.toString().endsWith("-diff.json") }.findFirst().orElse(null)
-            readAppDiffFile(diffFile.toAbsolutePath().toString(), apk.packageName)
             val instrumentedApk = instrumentAndSign(apk, sootDir)
             val outputApk = outputDir.resolve(
                 instrumentedApk.fileName.toString()
@@ -388,9 +382,6 @@ public class Instrumenter @JvmOverloads constructor(
                                 }
                                 val methodId = methodCounter
                                 var methodInfo = "$methodSig uuid=$methodUuid"
-                                if (isModified(methodSig)) {
-                                    methodInfo = "modified=true " + methodInfo
-                                }
                                 allMethods.put(methodId, methodInfo)
                                 val iterator = units.snapshotIterator()
                                 while (iterator.hasNext()) {
@@ -571,11 +562,6 @@ public class Instrumenter @JvmOverloads constructor(
         body.validate()
     }
 
-    private fun isModified(methodSig: String?): Boolean {
-        if (modifiedMethods.contains(methodSig))
-            return true
-        return false
-    }
 //
 //    private fun findCallingGUIElements(modMethod: SootMethod, callBack: SootMethod, refinedPackageName: String) {
 //        //
@@ -692,157 +678,6 @@ public class Instrumenter @JvmOverloads constructor(
         else
             apk.packageName
     }
-
-//    internal fun readWidgetMap() =//This is an ondemand implementation of signature patch
-//        try {
-//            val fr = FileReader(Configs.sootAndroidDir + "/scripts/consts/widgetMap")
-//            val br = BufferedReader(fr)
-//            var curLine = br.readLine()
-//            while (curLine != null) {
-//                val curLineArr = curLine.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-//                if (curLineArr.size != 2) {
-//                    Logger.verb("MAIN", "[MAP] Str: $curLine is not a valid map")
-//                }
-//                if (Configs.widgetMap.containsKey(curLineArr[0])) {
-//                    Logger.verb("MAIN", "[MAP] Str: collision at key " + curLineArr[0])
-//                } else {
-//                    Configs.widgetMap[curLineArr[0]] = curLineArr[1]
-//                }
-//                curLine = br.readLine()
-//            }
-//            Logger.trace("MAIN", "[INFO] Widget map loaded")
-//        } catch (e: IOException) {
-//            e.printStackTrace()
-//        }
-
-//    private fun configSootAndroid() {
-//        val sootandroidDir = Paths.get("./sootandroid")
-//        // Configs.project = config[apk].path.toString()
-//        Configs.benchmarkName = "I don't know"
-//        Configs.sdkDir = "ANDROID_HOME".asEnvDir.toString()
-//        Configs.apiLevel = "android-25"
-//        Configs.android = "ANDROID_HOME".asEnvDir.resolve("platforms")
-//            .resolve(Configs.apiLevel).resolve("android.jar").toString()
-//        Configs.guiAnalysis = true
-//        Configs.listenerSpecFile = sootandroidDir.resolve("listeners.xml").toAbsolutePath().toString()
-//        Configs.wtgSpecFile = sootandroidDir.resolve("wtg.xml").toAbsolutePath().toString()
-//        Configs.implicitIntent = false
-//        Configs.resolveContext = false
-//        Configs.trackWholeExec = false
-//        Configs.clients.add(GUIUserInteractionClient::class.qualifiedName)
-//        // Configs.clients.add(PathGenerationClient::class.qualifiedName)
-//        // Configs.workerNum = //default = 16
-//        // Configs.mockScene = //default = true
-//        Configs.hardwareEvent = true
-//        // Configs.detectLeak // default = false
-//        // Configs.testGenStrategy // default = false
-//        // Configs.sDepth  //default = 4
-//        // Configs.allowLoop // default = false
-//        // Configs.epDepth // default = 3
-//        // Configs.clientParams.add("GUI")
-//        // Configs.asyncStrategy // default
-//        // Configs.genTestCase // default false
-//        // Configs.pathoutfilename
-//        // Configs.monitoredClass
-//        Configs.libraryPackageFile =
-//            sootandroidDir.resolve("libPackages.txt").toAbsolutePath().toString()// may try libPackages.txt
-//
-//        // Configs.fastMode = true //default
-//        Configs.sootAndroidDir = sootandroidDir.toAbsolutePath().toString()
-//
-//        // Configs.flowgraphOutput = args[++i]
-//        // Configs.enableStringAnalysis = true
-//        // Configs.enableSetTextAnalysis = true
-//        Configs.processing()
-//
-//    }
-
-//    /**
-//     * Computes the classpath to be used by soot.
-//     */
-//    internal fun computeClasspath(): String {
-//        // Compute classpath
-//        val classpathBuffer = StringBuffer(Configs.android + ":" + Configs.jre)
-//        for (s in Configs.depJars) {
-//            classpathBuffer.append(":$s")
-//        }
-//
-//        // TODO(tony): add jar files of third-party libraries if necessary
-//        for (s in Configs.extLibs) {
-//            classpathBuffer.append(":$s/bin/classes")
-//        }
-//
-//        return classpathBuffer.toString()
-//    }
-
-    /**
-     *
-     */
-    internal fun readAppDiffFile(filename: String, refinedPackageName: String) {
-        val appDiffFile = File(filename)
-        if (!appDiffFile.exists()) {
-            log.error("Cannot find app diff file: $filename")
-            return
-        }
-
-        val appdiffJson = JSONObject(String(Files.readAllBytes(appDiffFile.toPath())))
-        val modMethods = appdiffJson.get("methodsChanged") as JSONArray
-
-        for (m in modMethods) {
-            val sootSignature = JavaSignatureFormatter.translateJavaLowLevelSignatureToSoot(m.toString())
-            if (!Scene.v().containsMethod(sootSignature))
-                continue
-            val declaredClass = Scene.v().getMethod(sootSignature).declaringClass
-            if (isLibraryClass(declaredClass.name))
-                continue
-
-            modifiedMethods.add(sootSignature)
-        }
-    }
-
-//    /**
-//     *
-//     */
-//    internal fun produceViewInvocationHashMap(): HashMap<String, Any> {
-//        val hashmapResult = HashMap<String, Any>()
-//        for ((k, v) in modMethodInvocation) {
-//
-//            for (e in v) {
-//                if (!hashmapResult.containsKey(e.window.toString())) {
-//                    hashmapResult[e.window.toString()] = HashMap<String, Any>()
-//                }
-//                val window = hashmapResult[e.window.toString()] as HashMap<String, Any>
-//                if (!window.contains(e.widget.toString())) {
-//                    window[e.widget.toString()] = ArrayList<HashMap<String, Any>>()
-//                }
-//
-//                val widget = window[e.widget.toString()] as ArrayList<HashMap<String, Any>>
-//                var hasEvent = false
-//                var eventIndex: Int? = null
-//                for ((i, rE) in widget.withIndex()) {
-//                    if (rE["eventType"] == e.eventType) {
-//                        hasEvent = true
-//                        eventIndex = i
-//                        break
-//                    }
-//                }
-//                if (hasEvent) {
-//                    (widget[eventIndex!!]["modMethods"] as ArrayList<String>).add(k)
-//                } else {
-//                    widget.add(
-//                        hashMapOf(
-//                            "eventType" to e.eventType, "eventHandlers" to e.handler.map { it.signature },
-//                            "modMethods" to arrayListOf<String>(k)
-//                        )
-//                    )
-//
-//                }
-//
-//            }
-//
-//        }
-//        return hashmapResult
-//    }
 
     fun getMethod_FindViewByIdAlter(
         activityClass: SootClass,
