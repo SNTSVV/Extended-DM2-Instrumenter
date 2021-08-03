@@ -1,1 +1,1 @@
---Core-configPath=./coverageCommandLineConfig.properties
+--useAppt2=false --packageName=de.rampro.activitydiary

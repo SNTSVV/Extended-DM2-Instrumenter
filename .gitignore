@@ -1,6 +1,6 @@
 .gradle
 .idea
-apk
+apks
 build
 instrumentedApks
 build

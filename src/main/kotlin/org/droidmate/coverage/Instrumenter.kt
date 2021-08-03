@@ -1,23 +1,38 @@
-/*
- * ATUA is a test automation tool for mobile Apps, which focuses on testing methods updated in each software release.
- * Copyright (C) 2019 - 2021 University of Luxembourg
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- */
+// DroidMate, an automated execution generator for Android apps.
+// Copyright (C) 2012-2018. Saarland University
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// Current Maintainers:
+// Nataniel Borges Jr. <nataniel dot borges at cispa dot saarland>
+// Jenny Hotzkow <jenny dot hotzkow at cispa dot saarland>
+//
+// Former Maintainers:
+// Konrad Jamrozik <jamrozik at st dot cs dot uni-saarland dot de>
+//
+// web: www.droidmate.org
 
 package org.droidmate.coverage
 
-import com.google.common.collect.Lists
 import com.natpryce.konfig.Misconfiguration
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import org.droidmate.ApkContentManager
 import org.droidmate.coverage.CommandLineConfig.apk
-import org.droidmate.coverage.CommandLineConfig.outputDir
 import org.droidmate.coverage.CommandLineConfig.onlyAppPackage
+import org.droidmate.coverage.CommandLineConfig.outputDir
 import org.droidmate.coverage.CommandLineConfig.printToLogcat
 import org.droidmate.device.android_sdk.Apk
 import org.droidmate.device.android_sdk.IApk
@@ -31,43 +46,35 @@ import org.droidmate.misc.DroidmateException
 import org.droidmate.misc.EnvironmentConstants
 import org.droidmate.misc.JarsignerWrapper
 import org.droidmate.misc.SysCmdExecutor
+import org.json.JSONArray
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
+import soot.Body
+import soot.BodyTransformer
+import soot.PackManager
+import soot.PhaseOptions
+import soot.Scene
+import soot.SootClass
+import soot.SootMethod
+import soot.Transform
+import soot.jimple.InvokeStmt
+import soot.jimple.Jimple
 import soot.jimple.internal.JIdentityStmt
 import soot.options.Options
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileFilter
+import java.io.FileReader
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
-import kotlin.streams.asSequence
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import org.droidmate.ApkContentManager
-import org.droidmate.Hierarchy
-import soot.Body
-import soot.BodyTransformer
-import soot.IntType
-import soot.Modifier
-import soot.PackManager
-import soot.PhaseOptions
-import soot.RefType
-import soot.Scene
-import soot.SootClass
-import soot.SootMethod
-import soot.SootMethodRef
-import soot.Transform
-import soot.Type
-import soot.VoidType
-import soot.jimple.InvokeStmt
-import soot.jimple.Jimple
-import soot.jimple.internal.JReturnStmt
-import soot.jimple.internal.JReturnVoidStmt
-import java.io.BufferedReader
-import java.io.FileReader
 import java.util.UUID
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.collections.HashSet
+import kotlin.streams.asSequence
 
 /**
  * Instrument statements in an apk.
@@ -88,9 +95,10 @@ public class Instrumenter @JvmOverloads constructor(
         var allMethods = HashMap<Long, String>()
         var allStatements = HashMap<Long, String>()
 
-        // key: source value: hashMapOf(widget, events)
         var widgetId_String = HashMap<String, String>()
 
+        var packageName: String = ""
+        var useAppt2: Boolean = false
         @JvmStatic
         fun main(args: Array<String>) {
             try {
@@ -103,6 +111,8 @@ public class Instrumenter @JvmOverloads constructor(
                 val apkPath = Paths.get(cfg[apk].path)
                 val onlyAppPackage = cfg[onlyAppPackage]
                 val printToLogcat = cfg[printToLogcat]
+                useAppt2 = cfg[CommandLineConfig.useAppt2]
+                packageName = cfg[CommandLineConfig.packageName]
                 val apkFiles: List<Path> = if (Files.isDirectory(apkPath)) {
                     Files.list(apkPath)
                         .asSequence()
@@ -168,6 +178,7 @@ public class Instrumenter @JvmOverloads constructor(
     private lateinit var runtime: Runtime
     private lateinit var apkContentManager: ApkContentManager
 
+    private var isAllModifiedMethods = false
     /**
      * <p>
      * Inlines apk at path {@code apkPath} and puts its inlined version in {@code outputDir}.
@@ -203,6 +214,8 @@ public class Instrumenter @JvmOverloads constructor(
             allMethods.clear()
             allStatements.clear()
 
+            val packageFile = Files.list(apk.path.parent).filter { it.fileName.toString().contains(apk.packageName) && it.fileName.toString().endsWith("-package.txt") }.findFirst().orElse(null)
+
             val apkToolDir = workDir.resolve("apkTool")
             Files.createDirectories(apkToolDir)
 //            apkContentManager = NewApkContentManager(apk.path, apkToolDir, workDir)
@@ -215,41 +228,131 @@ public class Instrumenter @JvmOverloads constructor(
             apkContentManager = ApkContentManager(apk.path, apkToolDir, workDir)
             // apkContentManager.installFramework(true)
             apkContentManager.extractApk(true)
-            // apkContentManager.deleteMANIFESTMF()
+//            // apkContentManager.deleteMANIFESTMF()
             // Add internet permission
             Helper.initializeManifestInfo(apk.path.toString())
-//            apkContentManager.changeMinSdkVersion()
+//          apkContentManager.changeMinSdkVersion()
             // The apk will need internet permissions to make sure that the TCP communication works
             if (!Helper.hasPermission(ManifestConstants.PERMISSION_INET)) {
-                apkContentManager.addPermissionsToApp(ManifestConstants.PERMISSION_INET)
-                // apkContentManager.buildApk(tmpOutApk)
-            } else {
+                // apkContentManager.addPermissionsToApp(ManifestConstants.PERMISSION_INET)
+            } /*else {
                 Files.copy(apk.path, tmpOutApk)
-            }
-            apkContentManager.buildApk(tmpOutApk)
-
-//            Files.copy(apk.path, tmpOutApk)
-
-//            Configs.project = tmpOutApk.toString()
-//            Configs.manifestLocation = apkToolDir.resolve("AndroidManifest.xml").toAbsolutePath().toString()
-//            Configs.resourceLocation = apkToolDir.resolve("res").toAbsolutePath().toString()
-
+            }*/
+            apkContentManager.buildApk(tmpOutApk, useAppt2)
             val sootDir = workDir.resolve("soot")
-//            configSoot(apk.path, sootDir)
+
             configSoot(tmpOutApk, sootDir)
+
+
             val instrumentedApk = instrumentAndSign(apk, sootDir)
+
             val outputApk = outputDir.resolve(
                 instrumentedApk.fileName.toString()
                     .replace(".apk", "-instrumented.apk")
             )
 
-            Files.move(instrumentedApk, outputApk, StandardCopyOption.REPLACE_EXISTING)
+            val rebuiltInstrumentedApk = buildNewApk(tmpOutApk, instrumentedApk, apkToolDir, workDir!!)
+
+            Files.move(rebuiltInstrumentedApk, outputApk, StandardCopyOption.REPLACE_EXISTING)
             val instrumentedStatements = writeInstrumentationList(apk, outputDir)
 
             return Pair(outputApk, instrumentedStatements)
         } finally {
             workDir.deleteDirectoryRecursively()
         }
+    }
+
+    private fun buildNewApk(orginalApkPath: Path, instrumentedApk: Path, apkToolDir: Path, workDir: Path): Path {
+        val orginalApkDir = workDir.resolve("original")
+        var originalApkManager = ApkContentManager(orginalApkPath, orginalApkDir, workDir)
+        originalApkManager.extractApk(true, false)
+        val originalApkDirFile = File(orginalApkDir.toUri())
+        var originalDexFolders = originalApkDirFile.listFiles(FileFilter { it.isDirectory }).filter { it.path.contains("smali") }
+        val helpDexFolder: Path =
+            if (originalDexFolders.size == 1) {
+                originalApkDirFile.toPath().resolve("smali_classes2")
+            } else {
+                val lastDexFolder = originalDexFolders.sorted().last()
+                val baseName = "smali_classes"
+                val dexNumber = lastDexFolder.toPath().fileName.toString().substring(baseName.length).toInt()
+                originalApkDirFile.toPath().resolve("$baseName${dexNumber + 1}")
+            }
+
+        val instrumentedApkDir = workDir.resolve("instrumented")
+        var instrumentedApkManager = ApkContentManager(instrumentedApk, instrumentedApkDir, workDir)
+        instrumentedApkManager.extractApk(true, false)
+        val instrumentedApkDirFile = File(instrumentedApkDir.toUri())
+        val instrumentedDexFolders = instrumentedApkDirFile.listFiles(FileFilter { it.isDirectory }).filter { it.path.contains("smali") }
+
+        val helperSootClassSignatures = helperSootClasses.map { it.name }
+        transformedClasses.filterNot { helperSootClassSignatures.contains(it) }.forEach { c ->
+            // for each class, we find its path in the instrumented apk
+            // and place it in the original apk
+            val classPathString: String = creatPathFromClass(c)
+            var classPath: Path? = null
+            for (df in instrumentedDexFolders) {
+                val tmpPath = Paths.get(df.toURI()).resolve(classPathString)
+                if (Files.exists(tmpPath)) {
+                    classPath = tmpPath
+                    break
+                }
+            }
+            if (classPath != null) {
+                var copied = false
+                for (df in originalDexFolders) {
+                    val tmpPath = Paths.get(df.toURI()).resolve(classPathString)
+                    if (Files.exists(tmpPath)) {
+                        Files.copy(classPath, tmpPath, StandardCopyOption.REPLACE_EXISTING)
+                        copied = true
+                        log.debug("Replacing succesfully $c")
+                        break
+                    }
+                }
+                if (!copied) {
+                    log.debug("Cannot find $c ")
+                }
+            } else {
+                log.debug("Transformed class: $c not found")
+            }
+        }
+        helperSootClassSignatures.forEach { c ->
+            // for each class, we find its path in the instrumented apk
+            // and place it in the original apk
+
+            val classPathString: String = creatPathFromClass(c)
+            var classPath: Path? = null
+            for (df in instrumentedDexFolders) {
+                val tmpPath = Paths.get(df.toURI()).resolve(classPathString)
+                if (Files.exists(tmpPath)) {
+                    classPath = tmpPath
+                    break
+                }
+            }
+            if (classPath != null) {
+                val tmpPath = helpDexFolder.resolve(classPathString)
+                Files.createDirectories(tmpPath.parent)
+                Files.copy(classPath, tmpPath)
+                log.debug("Copying succesfully $c")
+            } else {
+                log.debug("Transformed class: $c not found")
+            }
+        }
+        originalApkManager.buildApk(instrumentedApk, useAppt2)
+        log.info("Signing APK")
+        val signedApk = jarsignerWrapper.signWithDebugKey(instrumentedApk)
+        log.info("Signed APK at: $signedApk")
+        return signedApk
+    }
+
+    private fun creatPathFromClass(c: String): String {
+        val splitStrings = c.split(".")
+        var stringPath = ""
+        splitStrings.take(splitStrings.size - 1).forEach { s ->
+            stringPath = stringPath + "/$s"
+        }
+        stringPath = stringPath + "/${splitStrings.last()}.smali"
+        stringPath = stringPath.removeRange(0, 1)
+        return stringPath
     }
 
     /**
@@ -264,12 +367,13 @@ public class Instrumenter @JvmOverloads constructor(
         Options.v().set_debug(true)
         Options.v().set_validate(true)
         Options.v().set_output_format(Options.output_format_dex)
-        Options.v().set_include_all(true)
+//        Options.v().set_include_all(true)
+//        Options.v().set_whole_program(true)
         PhaseOptions.v().setPhaseOption("jb.tt", "enabled:false")
         PhaseOptions.v().setPhaseOption("jb.uce", "enabled:false")
         PhaseOptions.v().setPhaseOption("jj.uce", "enabled:false")
         PhaseOptions.v().setPhaseOption("jb.dtr", "enabled:false")
-        // Options.v().set_app(true)
+//         Options.v().set_app(true)
         val processDirs = ArrayList<String>()
         processDirs.add(processingApk.toString())
 
@@ -286,7 +390,11 @@ public class Instrumenter @JvmOverloads constructor(
         Resource("libPackages.txt").extractTo(stagingDir)
         libraryPackageFile = stagingDir.resolve("libPackages.txt").toString()
         processLibraryPkgFile()
-        // Options.v().set_exclude(getLibraryPackage())
+        Options.v().set_exclude(getLibraryPackage())
+        if (packageName.isNotBlank()) {
+            Options.v().set_exclude(getLibraryPackage())
+            Options.v().set_include(arrayListOf(packageName + ".*"))
+        }
         processDirs.add(resourceDir.toString())
 
         // Consider using multiplex, but it crashed for some apps
@@ -294,8 +402,14 @@ public class Instrumenter @JvmOverloads constructor(
         Options.v().set_process_dir(processDirs)
         Options.v().set_android_jars("ANDROID_HOME".asEnvDir.resolve("platforms").toString())
         Options.v().set_force_overwrite(true)
-//      Options.v().set_android_api_version(27)
+        Options.v().set_android_api_version(28)
         Scene.v().loadNecessaryClasses()
+
+//        log.info("Excluded libraries count: ${Options.v().exclude().size} ${Options.v().exclude()[0]}")
+//        log.info("Library classes count: ${Scene.v().libraryClasses.size}")
+//        log.info("Application classes count: ${Scene.v().applicationClasses.size}")
+//        val debugGSM = "com.google.android.gms.internal.firebase-perf.zzz"
+//        log.info("$debugGSM is application class: ${Scene.v().getSootClass(debugGSM).isApplicationClass}")
 
         runtime = Runtime.v(
             Paths.get(
@@ -337,6 +451,7 @@ public class Instrumenter @JvmOverloads constructor(
         return signedApk
     }
 
+    val transformedClasses = HashSet<String>()
     /**
      * Custom statement instrumentation transformer.
      * Each statement is uniquely assigned by an incrementing long counter (2^64 universe).
@@ -354,11 +469,31 @@ public class Instrumenter @JvmOverloads constructor(
                 val units = b.units
                 runBlocking {
                     mutex.withLock {
+                        val methodSig = b.method.signature
+
+                        // Debug
+/*                        if (b.method.declaringClass.name.contains("firebase-perf.zzz")) {
+                            val iterator = units.snapshotIterator()
+                            while (iterator.hasNext()) {
+                                val u = iterator.next()
+                                // Instrument statements
+                                if (u !is JIdentityStmt) {
+                                    if (u is DefinitionStmt) {
+                                        log.info(u?.toString() + " (DefinitionStmt) : " + (u as DefinitionStmt).leftOp.type.toString() + " = " + (u as DefinitionStmt).rightOp.type.toString() + "(" + (u as DefinitionStmt).rightOp.javaClass +")")
+                                        //  && (u as DefinitionStmt).leftOp.type.toString()
+                                        //  + " : " + (u as DefinitionStmt).leftOp.type.toString()
+                                    } else {
+                                        log.info(u?.toString())
+                                    }
+                                }
+                            }
+                        }*/
+                        // End Debug
                         // Important to use snapshotIterator here
                         // Skip if the current class is one of the classes we use to instrument the coverage
                         if (!helperSootClasses.any { b.method.declaringClass.name.contains(it.name) } &&
                             !excludedPackages.any { b.method.declaringClass.toString().startsWith(it) }) {
-                            if (!isLibraryClass(b.method.declaringClass.name)) {
+                            if (b.method.declaringClass.name.startsWith(refinedPackageName)) {
                                 // instrumentOnCreateOnResume(b)
                                 if (!allpackageClasses.containsValue(b.method.declaringClass.name)) {
                                     val classId = classCounter++
@@ -367,10 +502,8 @@ public class Instrumenter @JvmOverloads constructor(
                                 }
                             }
 
-                            val methodSig = b.method.signature
-
                             if (!onlyCoverAppPackageName ||
-                                (onlyCoverAppPackageName && !isLibraryClass(b.method.declaringClass.name))
+                                (onlyCoverAppPackageName && b.method.declaringClass.name.startsWith(refinedPackageName))
                             ) {
                                 // Perform instrumentation here
 
@@ -390,8 +523,13 @@ public class Instrumenter @JvmOverloads constructor(
                                     val uuid = UUID.randomUUID()
                                     // Instrument statements
                                     if (u !is JIdentityStmt) {
-                                        // check the statement invoke findViewById function
-                                        // log.info(u?.toString())
+//                                        if (u is DefinitionStmt) {
+//                                            log.info(u?.toString() + " (DefinitionStmt in $methodSig) : " + (u as DefinitionStmt).leftOp.type.toString() + " = " + (u as DefinitionStmt).rightOp.type.toString() )
+//                                            //  && (u as DefinitionStmt).leftOp.type.toString()
+//                                            //  + " : " + (u as DefinitionStmt).leftOp.type.toString()
+//                                        }
+//                                        // check the statement invoke findViewById function
+//                                        else log.info(u?.toString())
                                         var viewId = ""
                                         val id = counter
                                         // instrumentFindViewById(u, b)
@@ -405,6 +543,9 @@ public class Instrumenter @JvmOverloads constructor(
                                     }
                                 }
                                 methodCounter++
+                                if (!transformedClasses.contains(b.method.declaringClass.name)) {
+                                    transformedClasses.add(b.method.declaringClass.name)
+                                }
                             }
                             b.validate()
                         }
@@ -491,49 +632,6 @@ public class Instrumenter @JvmOverloads constructor(
         return false
     }
 
-    private fun instrumentOnCreateOnResume(b: Body) {
-        val declaringClass = b.method.declaringClass
-        val onResumeSubsig = "void onResume()"
-        val onCreateSubsig = "void onCreate(android.os.Bundle)"
-        val onRestartSubsig = "void onRestart()"
-        if (!declaringClass.isAbstract && Hierarchy.v().isActivityClass(declaringClass) && !declaringClass.name.contains(
-                "BaseActivity"
-            )
-        ) {
-            if (!declaringClass.declaresMethod(onResumeSubsig)) {
-                val onResume = SootMethod("onResume", emptyList(), VoidType.v())
-                addMethodToClass(declaringClass, onResume)
-            }
-            if (!declaringClass.declaresMethod(onRestartSubsig)) {
-                val onRestart = SootMethod("onRestart", emptyList(), VoidType.v())
-                addMethodToClass(declaringClass, onRestart)
-            }
-            if (!declaringClass.declaresMethod(onCreateSubsig)) {
-                val onCreate = SootMethod("onCreate", arrayListOf<Type>(RefType.v("android.os.Bundle")), VoidType.v())
-                addMethodToClass(declaringClass, onCreate)
-            }
-            if (b.method.subSignature.equals(onCreateSubsig) || b.method.subSignature.equals(
-                    onResumeSubsig
-                ) || b.method.subSignature.equals(onRestartSubsig)
-            ) {
-
-                val currentActivityName = b.method.declaringClass.name
-                val iterator = b.units.snapshotIterator()
-                while (iterator.hasNext()) {
-                    val u = iterator.next()
-                    // find first not jidentitystatement
-                    if (u !is JIdentityStmt) {
-                        if (u is JReturnVoidStmt || u is JReturnStmt) {
-                            val logStatement = runtime.makeCallToSetCurrentActivity(currentActivityName, printToLogcat)
-                            b.units.insertBefore(logStatement, u)
-                            break
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     private fun addMethodToClass(declaringClass: SootClass, method: SootMethod) {
         // create method
         declaringClass.addMethod(method)
@@ -562,106 +660,6 @@ public class Instrumenter @JvmOverloads constructor(
         body.validate()
     }
 
-//
-//    private fun findCallingGUIElements(modMethod: SootMethod, callBack: SootMethod, refinedPackageName: String) {
-//        //
-//        /*if(allMethodInvocation.containsKey(modMethod.signature))
-//        {
-//            allMethodInvocation[modMethod.signature] = ArrayList<HashMap<String,String>>()
-//        }*/
-//        if (modMethod.equals(callBack)) //first call
-//        {
-//            if (modMethodInvocation.containsKey(modMethod.signature))
-//                return
-//
-//            val eventHandlers = getEventHandlers(modMethod.signature)
-//            if (eventHandlers.size > 0) {
-//
-//                addMethodInvocation(modMethod.signature, eventHandlers, modMethodInvocation)
-//                addMethodInvocation(modMethod.signature, eventHandlers, cacheMethodInvocation)
-//                return
-//            }
-//
-//        }
-//        // callback method is not a GUIElement but it can be processed before
-//        if (!modMethod.equals(callBack) && cacheMethodInvocation.containsKey(callBack.signature)) {
-//            // if it is, add callback's handlers
-//            addMethodInvocation(modMethod.signature, cacheMethodInvocation[callBack.signature]!!, modMethodInvocation)
-//            addMethodInvocation(modMethod.signature, cacheMethodInvocation[callBack.signature]!!, cacheMethodInvocation)
-//            return
-//        }
-//        val eventHandlers = getEventHandlers(callBack.signature)
-//        if (eventHandlers.size > 0) {
-//            //if callback is an event handler, add event handlers related to callback
-//            addMethodInvocation(modMethod.signature, eventHandlers, modMethodInvocation)
-//            addMethodInvocation(modMethod.signature, eventHandlers, cacheMethodInvocation)
-//            //add callback invocation to cache
-//            addMethodInvocation(callBack.signature, eventHandlers, cacheMethodInvocation)
-//            return
-//        }
-//        // if not, try to find its invoked callback
-//        val callGraph = Scene.v().callGraph
-//        //val sootMethod = Scene.v().getMethod(callBack.signature)
-//        val sources = Sources(callGraph.edgesInto(callBack))
-//        while (sources.hasNext()) {
-//            val method = sources.next().method()
-//            if (!method.equals(callBack) && method.signature.startsWith(refinedPackageName)) {
-//                //log.info("findCallinfGUIElements for $method ")
-//                findCallingGUIElements(modMethod, method, refinedPackageName)
-//                //add eventhandlers of each method for current callback invocation
-//                if (cacheMethodInvocation.contains(method.signature))
-//                    addMethodInvocation(
-//                        callBack.signature,
-//                        cacheMethodInvocation[method.signature]!!,
-//                        cacheMethodInvocation
-//                    )
-//            }
-//        }
-//    }
-
-//    private fun addMethodInvocation(
-//        method: String,
-//        events: ArrayList<ActivityEvent>,
-//        methodInvocations: HashMap<String, ArrayList<ActivityEvent>>
-//    ) {
-//        for (e in events) {
-//            if (!methodInvocations.containsKey(method)) {
-//                methodInvocations[method] = ArrayList<ActivityEvent>()
-//            }
-//            val eventExisted = methodInvocations[method]!!.contains(e)
-//            if (!eventExisted)
-//                methodInvocations[method]!!.add(e)
-//        }
-//    }
-
-//    internal fun getEventHandlers(handler: String): ArrayList<ActivityEvent> {
-//        if (!GUIUserInteractionClient.allEventHandlers.contains(handler))
-//            return ArrayList()
-//        var guiElements = ArrayList<ActivityEvent>() //each element compose "source", "widget", "eventType"
-//        if (!GUIUserInteractionClient.allExplicitEventHandlers.contains(handler)) {
-//            GUIUserInteractionClient.allCallbacks.filter {
-//                it.second.contains(handler)
-//            }.forEach {
-//                val invokedEventHandler = it.first
-//                guiElements.add(it.first)
-//            }
-//        }
-//
-//        val i = GUIUserInteractionClient.widgetEvents.iterator()
-//        if (i != null) {
-//            while (i.hasNext()) {
-//                val element = i.next()
-//                val widget = element.key
-//                val eventHandlers = element.value
-//                for (e in eventHandlers) {
-//
-//                    if (e.handler.first().signature == handler)
-//                        guiElements.add(e)
-//                }
-//            }
-//        }
-//        return guiElements
-//    }
 
     /**
      * In the package has more than 2 parts, it returns the 2 first parts
@@ -669,6 +667,8 @@ public class Instrumenter @JvmOverloads constructor(
      * @return The first to 2 segments of the package name
      */
     private fun refinePackageName(apk: IApk): String {
+        if (packageName.isNotBlank())
+            return packageName
         val parts = apk.packageName.split("\\.".toRegex())
             .dropLastWhile { it.isEmpty() }
             .toTypedArray()
@@ -679,56 +679,6 @@ public class Instrumenter @JvmOverloads constructor(
             apk.packageName
     }
 
-    fun getMethod_FindViewByIdAlter(
-        activityClass: SootClass,
-        callerClass: SootClass,
-        findViewByIdMethodRef: SootMethodRef
-    ): SootMethod? {
-        // create new method and add to activityClass
-        val androidViewType = RefType.v("android.view.View")
-        // Create new method
-        val method = SootMethod(
-            "findViewByIdAlter",
-            arrayListOf<Type>(RefType.v(callerClass), IntType.v()) as MutableList<Type>?,
-            androidViewType,
-            Modifier.PUBLIC
-        )
-        // check class has already this method
-        if (Scene.v().containsMethod(SootMethod.getSignature(activityClass, method.subSignature)))
-            return activityClass.getMethod(method.subSignature)
-
-        activityClass.addMethod(method)
-        // Create body
-        val body = Jimple.v().newBody(method)
-        method.activeBody = body
-        // adding this-assigment
-        // val thisLocal = Jimple.v().newThisRef(activityClass.type)
-        body.insertIdentityStmts()
-
-        // adding a local
-        /*
-        val arg = Jimple.v().newLocal("l0", IntType.v())
-        body.locals.add(arg)
-        body.units.add(Jimple.v().newIdentityStmt(arg,Jimple.v().newParameterRef(IntType.v(),0)))
-        */
-
-        val caller = body.getParameterLocal(0)
-        val resourceId = body.getParameterLocal(1)
-
-        // get findViewById method
-        // invoke original findViewById
-        val findViewByIdInvokeExpr = Jimple.v().newVirtualInvokeExpr(caller, findViewByIdMethodRef, resourceId)
-        // body.units.add(Jimple.v().newInvokeStmt(findViewByIdInvokeExpr))
-        // assign invoked result to an object
-        val objResult = Jimple.v().newLocal("\$l1", androidViewType)
-        body.locals.add(objResult)
-        val assignStmt = Jimple.v().newAssignStmt(objResult, findViewByIdInvokeExpr)
-        body.units.add(assignStmt)
-
-        val returnStm = Jimple.v().newReturnStmt(objResult)
-        body.units.add(returnStm)
-        return method
-    }
 
     @Throws(IOException::class)
     private fun writeInstrumentationList(apk: IApk, outputDir: Path): Path {
@@ -769,19 +719,20 @@ public class Instrumenter @JvmOverloads constructor(
     }
 
     fun getLibraryPackage(): ArrayList<String> {
-        val libraryPackageSoot = ArrayList<String>()
-        libraryPackages?.forEach {
-            if (it.endsWith(".*")) {
-                val pkgName = it.substring(0, it.indexOf(".*"))
-                libraryPackageSoot.add(pkgName)
-            }
-        }
+        val libraryPackageSoot = ArrayList<String>(libraryPackages)
+//        libraryPackages?.forEach {
+//            if (it.endsWith(".*")) {
+//                val pkgName = it.substring(0, it.indexOf(".*"))
+//                libraryPackageSoot.add(pkgName)
+//            }
+//        }
+
         return libraryPackageSoot
     }
 
     fun addLibraryPackage(packageName: String) {
         if (libraryPackages == null) {
-            libraryPackages = Lists.newArrayList<String>()
+            libraryPackages = ArrayList<String>()
         }
         libraryPackages!!.add(packageName)
     }

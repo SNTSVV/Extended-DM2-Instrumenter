@@ -32,6 +32,16 @@ object CommandLineConfigBuilder {
             description = "Output directory for instrumented Apk",
             short = "out",
             metavar = "Path"
+        ),
+        CommandLineOption(CommandLineConfig.packageName,
+        description = "Package name for instrumented Apk",
+        short = "package",
+        metavar = "String"
+        ),
+        CommandLineOption(CommandLineConfig.useAppt2,
+            description = "Use appt2 for building Apk",
+            short = "appt2",
+            metavar = "Boolean"
         )
     ).first)
 
@@ -44,7 +54,7 @@ object CommandLineConfigBuilder {
             else -> null
         }
 
-        val config : Configuration =
+        val config: Configuration =
             // command line
             cfgCommandLine overriding
                     // overrides custom config file

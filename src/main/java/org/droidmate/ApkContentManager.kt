@@ -46,6 +46,38 @@ constructor(private val originalApkPath: Path, private val apkContentDir: Path, 
     private val apkTool = Resource("apktool.jar").extractTo(stagingDir)
 
     @Throws(IOException::class)
+    fun extractApk(forceOverwriteApkContentDir: Boolean, resource: Boolean = true, source: Boolean = true) {
+        // Do not extract again if app has not changed since last extraction
+        if (!forceOverwriteApkContentDir && Files.exists(apkContentDir) &&
+            Files.getLastModifiedTime(apkContentDir) >= Files.getLastModifiedTime(originalApkPath)
+        ) {
+            log.info(
+                "Apk hasn't changed since last extraction. Omitting ApkTool invocation. Use 'forceOverwriteApkContentDir' to force an update!")
+            return
+        }
+
+        log.info("Invoking apk tool to extract apks content")
+        val stopWatch = Stopwatch.createStarted()
+        // Added -r, otherwise some apps invoked:
+        // brut.androlib.AndrolibException: brut.common.BrutException: could not exec
+        val params = ArrayList<String>()
+        params.add("-f")
+        params.add("d")
+        if (!resource) {
+            params.add("-r")
+        }
+        if (!source) {
+            params.add("-s")
+        }
+        params.add("-o")
+        params.add(apkContentDir.toString())
+        params.add(originalApkPath.toString())
+        invokeApkTool(*params.toTypedArray())
+
+        log.info("Apk tool finished after {}", stopWatch)
+    }
+
+    @Throws(IOException::class)
     fun extractApk(forceOverwriteApkContentDir: Boolean) {
         // Do not extract again if app has not changed since last extraction
         if (!forceOverwriteApkContentDir && Files.exists(apkContentDir) &&
@@ -69,6 +101,16 @@ constructor(private val originalApkPath: Path, private val apkContentDir: Path, 
         log.info("Invoking apk tool to build apk from content dir")
         val stopWatch = Stopwatch.createStarted()
         invokeApkTool("b", apkContentDir.toString(), "-o", outApk.toString())
+        log.info("Apk tool finished after {}", stopWatch)
+    }
+
+    fun buildApk(outApk: Path, useAppt2: Boolean) {
+        log.info("Invoking apk tool to build apk from content dir")
+        val stopWatch = Stopwatch.createStarted()
+        if (useAppt2)
+            invokeApkTool("--use-aapt2", "b", apkContentDir.toString(), "-o", outApk.toString())
+        else
+            invokeApkTool("b", apkContentDir.toString(), "-o", outApk.toString())
         log.info("Apk tool finished after {}", stopWatch)
     }
 
