@@ -88,7 +88,7 @@
     <setting file="file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt" root0="SKIP_INSPECTION" />
   </component>
   <component name="NamedScopeManager">
-    <scope name="ATUA" pattern="src:Instrumenter||src:NewApkContentManager||src:JavaSignatureFormatter||src[coverage.main]:org.droidmate.coverage.Instrumenter||src[coverage.main]:org.droidmate.coverage.JavaSignatureFormatter||src[coverage.main]:org.droidmate.coverage.NewApkContentManager" />
+    <scope name="ATUA" pattern="src:Instrumenter||src:NewApkContentManager||src:JavaSignatureFormatter||src[coverage.main]:org.droidmate.coverage.Instrumenter||src[coverage.main]:org.droidmate.coverage.JavaSignatureFormatter||src[coverage.main]:org.droidmate.coverage.NewApkContentManager||src[extended-dm2-instrumenter.main]:org.droidmate.coverage.NewApkContentManager||src[extended-dm2-instrumenter.main]:org.droidmate.coverage.*||src[extended-dm2-instrumenter.main]:org.droidmate.ApkContentManager" />
   </component>
   <component name="ProjectId" id="1Rrr8kRJ0oeSTiEoNi5JQotahkB" />
   <component name="ProjectViewState">
@@ -107,7 +107,7 @@
     <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.2474227" />
-    <property name="settings.editor.selected.configurable" value="project.scopes" />
+    <property name="settings.editor.selected.configurable" value="copyright" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
