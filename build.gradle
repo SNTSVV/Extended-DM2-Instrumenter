@@ -1,3 +1,6 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+
 // DroidMate, an automated execution generator for Android apps.
 // Copyright (C) 2012-2018. Saarland University
 //
@@ -25,7 +28,7 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.3.21'
 }
-
+apply plugin: 'application'
 apply plugin: 'kotlin'
 apply plugin: 'java'
 group 'org.droidmate'
@@ -50,6 +53,16 @@ task sourcesJar(type: Jar, dependsOn: "classes") {
   //  from sourceSets.test.allSource
 }
 
+tasks.run.configure {
+    sourceSets.main.runtimeClasspath = classpath
+    workingDir rootDir
+    def argsFile = Paths.get("$rootDir/args.txt")
+    if (Files.exists(argsFile))
+    {
+        List<String> appArgs = argsFile.text.readLines().first().split(" ") as List<String>
+        args appArgs
+    }
+}
 
 apply plugin: 'maven-publish'
 
@@ -68,7 +81,7 @@ project.publishing {
     }
     // ...
 }
-apply plugin: 'application'
+
 mainClassName = "org.droidmate.coverage.Instrumenter"
 
 jar {
