@@ -54,6 +54,11 @@ object CommandLineConfigBuilder {
             description = "Use appt2 for building Apk",
             short = "appt2",
             metavar = "Boolean"
+        ),
+        CommandLineOption(CommandLineConfig.replaceMonitorServer,
+            description = "Only replace monitor server of instrumented apk.",
+            short = "replaceMonitorServer",
+            metavar = "Boolean"
         )
     ).first)
 

@@ -9,14 +9,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4064df3f-5f55-43f2-96a1-f85d289cfd4c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/args.txt" beforeDir="false" afterPath="$PROJECT_DIR$/args.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/droidmate/ApkContentManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/droidmate/ApkContentManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/droidmate/runtime/Runtime.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/droidmate/runtime/Runtime.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/CommandLineConfig.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/CommandLineConfig.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/CommandLineConfigBuilder.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/CommandLineConfigBuilder.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/coverageCommandLineConfig.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/coverageCommandLineConfig.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/JavaSignatureFormatter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/JavaSignatureFormatter.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,17 +43,6 @@
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="extended-dm2-instrumenter" type="f1a62948:ProjectNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="extended-dm2-instrumenter" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="extended-dm2-instrumenter" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="application" type="c8890929:TasksNode$1" />
               </path>
             </expand>
             <select />
@@ -84,8 +73,8 @@
     </file-type-list>
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/settings.gradle" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/settings.gradle" root0="SKIP_INSPECTION" />
   </component>
   <component name="NamedScopeManager">
     <scope name="ATUA" pattern="src:Instrumenter||src:NewApkContentManager||src:JavaSignatureFormatter||src[coverage.main]:org.droidmate.coverage.Instrumenter||src[coverage.main]:org.droidmate.coverage.JavaSignatureFormatter||src[coverage.main]:org.droidmate.coverage.NewApkContentManager||src[extended-dm2-instrumenter.main]:org.droidmate.coverage.NewApkContentManager||src[extended-dm2-instrumenter.main]:org.droidmate.coverage.*||src[extended-dm2-instrumenter.main]:org.droidmate.ApkContentManager" />
@@ -111,8 +100,8 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/apks" />
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/benchmark-test/com.iven.musicplayergo" />
       <recent name="$PROJECT_DIR$/benchmark-test/com.iven.musicplayer" />
       <recent name="$PROJECT_DIR$/apk" />
@@ -221,7 +210,7 @@
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
+        <option name="scriptParameters" value="--stacktrace" />
         <option name="taskDescriptions">
           <list />
         </option>
@@ -316,22 +305,22 @@
         <line-breakpoint enabled="true" type="kotlin-line">
           <condition expression="methodSig.contains(&quot;MainActivity&quot;)" language="kotlin" />
           <url>file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt</url>
-          <line>375</line>
+          <line>397</line>
           <option name="timeStamp" value="138" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt</url>
-          <line>753</line>
+          <line>776</line>
           <option name="timeStamp" value="143" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt</url>
-          <line>548</line>
+          <line>571</line>
           <option name="timeStamp" value="144" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/src/main/kotlin/org/droidmate/coverage/Instrumenter.kt</url>
-          <line>101</line>
+          <line>89</line>
           <option name="timeStamp" value="146" />
         </line-breakpoint>
       </breakpoints>

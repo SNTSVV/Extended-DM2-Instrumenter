@@ -24,4 +24,5 @@ object CommandLineConfig {
     val outputDir by uriType
     val packageName by stringType
     val useAppt2 by booleanType
+    val replaceMonitorServer by booleanType
 }

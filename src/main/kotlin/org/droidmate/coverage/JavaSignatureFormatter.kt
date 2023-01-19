@@ -89,6 +89,7 @@ object JavaSignatureFormatter {
 
             if (p > 0) {
                 sig += PAR_SEPARATOR
+                p=0
             }
 
             val c = argumentName[i]

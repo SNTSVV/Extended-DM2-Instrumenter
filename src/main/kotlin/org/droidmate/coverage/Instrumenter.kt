@@ -21,6 +21,7 @@ import org.droidmate.coverage.CommandLineConfig.apk
 import org.droidmate.coverage.CommandLineConfig.onlyAppPackage
 import org.droidmate.coverage.CommandLineConfig.outputDir
 import org.droidmate.coverage.CommandLineConfig.printToLogcat
+import org.droidmate.coverage.CommandLineConfig.replaceMonitorServer
 import org.droidmate.device.android_sdk.Apk
 import org.droidmate.device.android_sdk.IApk
 import org.droidmate.helpClasses.Helper
@@ -33,7 +34,6 @@ import org.droidmate.misc.DroidmateException
 import org.droidmate.misc.EnvironmentConstants
 import org.droidmate.misc.JarsignerWrapper
 import org.droidmate.misc.SysCmdExecutor
-import org.json.JSONArray
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import soot.Body
@@ -86,6 +86,7 @@ public class Instrumenter @JvmOverloads constructor(
 
         var packageName: String = ""
         var useAppt2: Boolean = false
+        var onlyReplaceMonitorServer = true
         @JvmStatic
         fun main(args: Array<String>) {
             try {
@@ -95,11 +96,14 @@ public class Instrumenter @JvmOverloads constructor(
                 log.info("  Only app package: ${cfg[onlyAppPackage]}")
                 log.info("  Print to logcat: ${cfg[printToLogcat]}")
                 log.info("  Output dir: ${cfg[outputDir]}")
+                log.info("  Replace Monitor Server: ${cfg[replaceMonitorServer]}")
                 val apkPath = Paths.get(cfg[apk].path)
                 val onlyAppPackage = cfg[onlyAppPackage]
                 val printToLogcat = cfg[printToLogcat]
                 useAppt2 = cfg[CommandLineConfig.useAppt2]
                 packageName = cfg[CommandLineConfig.packageName]
+                onlyReplaceMonitorServer = cfg[replaceMonitorServer]
+
                 val apkFiles: List<Path> = if (Files.isDirectory(apkPath)) {
                     Files.list(apkPath)
                         .asSequence()
@@ -128,6 +132,7 @@ public class Instrumenter @JvmOverloads constructor(
                     "Compiled apk moved to: ${instrumentationResult.first}\n" +
                             "Instrumentation results written to: ${instrumentationResult.second}"
                 )
+
             } catch (e: Misconfiguration) {
                 CommandLineConfigBuilder.build(arrayOf("--help"))
             }
@@ -166,6 +171,36 @@ public class Instrumenter @JvmOverloads constructor(
     private lateinit var apkContentManager: ApkContentManager
 
     private var isAllModifiedMethods = false
+
+    /**
+     * @param apk Apk to be instrumented
+     * @param outputDir Directory where the APK file will be stored
+     * @return the APK path
+     */
+    fun replaceMonitorServer(apk: IApk, outputDir: Path): Path{
+        val workDir = Files.createTempDirectory("coverage")
+        val apkToolDir = workDir.resolve("apkTool")
+        Files.createDirectories(apkToolDir)
+//            apkContentManager = NewApkContentManager(apk.path, apkToolDir, workDir)
+//            apkContentManager.extractApkWithResource(true)
+        val tmpOutApk = workDir.resolve(apk.fileName)
+
+        val apkToolNoResourceDir = workDir.resolve("apkToolNoResource")
+        Files.createDirectories(apkToolNoResourceDir)
+
+        apkContentManager = ApkContentManager(apk.path, apkToolDir, workDir)
+        // apkContentManager.installFramework(true)
+        apkContentManager.extractApk(true)
+        // Add internet permission
+        Helper.initializeManifestInfo(apk.path.toString())
+        apkContentManager.buildApk(tmpOutApk, useAppt2)
+        val rebuiltInstrumentedApk = buildNewApk(tmpOutApk, apk.path, apkToolDir, workDir!!)
+        val outputApk = outputDir.resolve(
+            apk.fileName.toString()
+        )
+        Files.move(rebuiltInstrumentedApk, outputApk, StandardCopyOption.REPLACE_EXISTING)
+        return outputApk
+    }
     /**
      * <p>
      * Inlines apk at path {@code apkPath} and puts its inlined version in {@code outputDir}.
@@ -230,7 +265,6 @@ public class Instrumenter @JvmOverloads constructor(
 
             configSoot(tmpOutApk, sootDir)
 
-
             val instrumentedApk = instrumentAndSign(apk, sootDir)
 
             val outputApk = outputDir.resolve(
@@ -241,6 +275,7 @@ public class Instrumenter @JvmOverloads constructor(
             val rebuiltInstrumentedApk = buildNewApk(tmpOutApk, instrumentedApk, apkToolDir, workDir!!)
 
             Files.move(rebuiltInstrumentedApk, outputApk, StandardCopyOption.REPLACE_EXISTING)
+
             val instrumentedStatements = writeInstrumentationList(apk, outputDir)
 
             return Pair(outputApk, instrumentedStatements)
@@ -249,7 +284,7 @@ public class Instrumenter @JvmOverloads constructor(
         }
     }
 
-    private fun buildNewApk(orginalApkPath: Path, instrumentedApk: Path, apkToolDir: Path, workDir: Path): Path {
+    private fun buildNewApk(orginalApkPath: Path, instrumentedApk: Path  ,apkToolDir: Path, workDir: Path): Path {
         val orginalApkDir = workDir.resolve("original")
         var originalApkManager = ApkContentManager(orginalApkPath, orginalApkDir, workDir)
         originalApkManager.extractApk(true, false)
@@ -331,7 +366,7 @@ public class Instrumenter @JvmOverloads constructor(
         return signedApk
     }
 
-    private fun creatPathFromClass(c: String): String {
+      private fun creatPathFromClass(c: String): String {
         val splitStrings = c.split(".")
         var stringPath = ""
         splitStrings.take(splitStrings.size - 1).forEach { s ->
@@ -410,11 +445,12 @@ public class Instrumenter @JvmOverloads constructor(
 
     private fun IApk.instrumentWithSoot(sootDir: Path): Path {
         log.info("Start instrumenting coverage...")
+        if (!onlyReplaceMonitorServer) {
+            val transformer = ITransformer(this, onlyCoverAppPackageName)
 
-        val transformer = ITransformer(this, onlyCoverAppPackageName)
-
-        if (PackManager.v().getPack("jtp").get("jtp.androcov") == null) {
-            PackManager.v().getPack("jtp").add(transformer)
+            if (PackManager.v().getPack("jtp").get("jtp.androcov") == null) {
+                PackManager.v().getPack("jtp").add(transformer)
+            }
         }
 
         PackManager.v().runPacks()
