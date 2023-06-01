@@ -59,7 +59,12 @@ object CommandLineConfigBuilder {
             description = "Only replace monitor server of instrumented apk.",
             short = "replaceMonitorServer",
             metavar = "Boolean"
-        )
+        ) ,
+        CommandLineOption(CommandLineConfig.logLifeCycleMethod,
+        description = "Log lifecycle methods",
+        short = "logLifeCycleMethod",
+        metavar = "Boolean"
+    )
     ).first)
 
     private fun build(cfgCommandLine: Configuration): Configuration {

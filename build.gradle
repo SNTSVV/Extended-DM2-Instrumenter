@@ -32,7 +32,7 @@ apply plugin: 'application'
 apply plugin: 'kotlin'
 apply plugin: 'java'
 group 'org.droidmate'
-version '1.3.5-RC0'
+version '1.4.0'
 
 apply from: file("${rootProject.projectDir}/ktlint.gradle")
 
@@ -97,6 +97,7 @@ configurations {
 }
 
 dependencies {
+
     testImplementation 'junit:junit:4.12'
    // testImplementation "org.jetbrains.kotlin:kotlin-test:${project.ext.kotlin_version}"
 
@@ -119,11 +120,23 @@ dependencies {
     implementation "de.upb.cs.swt:heros:1.1.0"
     implementation ("de.tud.sse:soot-infoflow-android:2.8") {
         // FlowDroid uses an older version of Soot, let's use the newest one!
-        //exclude group: 'ca.mcgill.sable', module: 'soot'
+//        exclude group: 'ca.mcgill.sable', module: 'soot'
         //exclude group: 'de.upd.cs.swt', module: 'heros'
     }
-}
+    constraints {
+        implementation("org.soot-oss:soot") {
+            version {
+                strictly '4.3.0'
+            }
+        }
+    }
 
+}
+//configurations {
+//    compileClasspath {
+//        resolutionStrategy.force 'org.soot-oss:soot:4.3.0'
+//    }
+//}
 /*test {
     maxHeapSize = "2048m"
     testLogging {

@@ -1,0 +1,8 @@
+void onCreate(android.os.Bundle)
+void onStart()
+void onPause()
+void onResume()
+void onStop()
+void onDestroy()
+void onRestart()
+void onActivityResult(int,int,android.content.Intent)

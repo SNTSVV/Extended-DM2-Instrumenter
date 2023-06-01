@@ -1,1 +1,1 @@
---useAppt2=false --packageName=com.amaze.filemanager
+--useAppt2=false --packageName=de.rampro.activitydiary

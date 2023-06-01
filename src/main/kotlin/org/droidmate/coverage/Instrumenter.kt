@@ -17,11 +17,14 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.droidmate.ApkContentManager
+import org.droidmate.Hierarchy
 import org.droidmate.coverage.CommandLineConfig.apk
 import org.droidmate.coverage.CommandLineConfig.onlyAppPackage
 import org.droidmate.coverage.CommandLineConfig.outputDir
 import org.droidmate.coverage.CommandLineConfig.printToLogcat
 import org.droidmate.coverage.CommandLineConfig.replaceMonitorServer
+import org.droidmate.coverage.CommandLineConfig.addInternetPermission
+import org.droidmate.coverage.CommandLineConfig.logLifeCycleMethod
 import org.droidmate.device.android_sdk.Apk
 import org.droidmate.device.android_sdk.IApk
 import org.droidmate.helpClasses.Helper
@@ -40,14 +43,18 @@ import soot.Body
 import soot.BodyTransformer
 import soot.PackManager
 import soot.PhaseOptions
+import soot.RefType
 import soot.Scene
 import soot.SootClass
 import soot.SootMethod
 import soot.Transform
+import soot.jimple.DefinitionStmt
 import soot.jimple.InvokeStmt
 import soot.jimple.Jimple
 import soot.jimple.internal.JIdentityStmt
+import soot.jimple.internal.JNewExpr
 import soot.options.Options
+import soot.tagkit.SourceFileTag
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileFilter
@@ -81,12 +88,14 @@ public class Instrumenter @JvmOverloads constructor(
         val allClasses = HashMap<Long, String>()
         var allMethods = HashMap<Long, String>()
         var allStatements = HashMap<Long, String>()
-
+        var lambdaMethodToMethod = HashMap<Long, Long>()
         var widgetId_String = HashMap<String, String>()
 
         var packageName: String = ""
         var useAppt2: Boolean = false
         var onlyReplaceMonitorServer = true
+        var addPermission = true
+        var instrumentLogLifeCycleMethods = true
         @JvmStatic
         fun main(args: Array<String>) {
             try {
@@ -103,7 +112,8 @@ public class Instrumenter @JvmOverloads constructor(
                 useAppt2 = cfg[CommandLineConfig.useAppt2]
                 packageName = cfg[CommandLineConfig.packageName]
                 onlyReplaceMonitorServer = cfg[replaceMonitorServer]
-
+                addPermission = cfg[addInternetPermission]
+                this.instrumentLogLifeCycleMethods = cfg[logLifeCycleMethod]
                 val apkFiles: List<Path> = if (Files.isDirectory(apkPath)) {
                     Files.list(apkPath)
                         .asSequence()
@@ -132,7 +142,6 @@ public class Instrumenter @JvmOverloads constructor(
                     "Compiled apk moved to: ${instrumentationResult.first}\n" +
                             "Instrumentation results written to: ${instrumentationResult.second}"
                 )
-
             } catch (e: Misconfiguration) {
                 CommandLineConfigBuilder.build(arrayOf("--help"))
             }
@@ -171,13 +180,14 @@ public class Instrumenter @JvmOverloads constructor(
     private lateinit var apkContentManager: ApkContentManager
 
     private var isAllModifiedMethods = false
+    private val lifeCycleMethodSubSigs = ArrayList<String>()
 
     /**
      * @param apk Apk to be instrumented
      * @param outputDir Directory where the APK file will be stored
      * @return the APK path
      */
-    fun replaceMonitorServer(apk: IApk, outputDir: Path): Path{
+    fun replaceMonitorServer(apk: IApk, outputDir: Path): Path {
         val workDir = Files.createTempDirectory("coverage")
         val apkToolDir = workDir.resolve("apkTool")
         Files.createDirectories(apkToolDir)
@@ -235,6 +245,9 @@ public class Instrumenter @JvmOverloads constructor(
         try {
             allMethods.clear()
             allStatements.clear()
+            allClasses.clear()
+            allpackageClasses.clear()
+            lambdaMethodToMethod.clear()
 
             val packageFile = Files.list(apk.path.parent).filter { it.fileName.toString().contains(apk.packageName) && it.fileName.toString().endsWith("-package.txt") }.findFirst().orElse(null)
 
@@ -249,14 +262,14 @@ public class Instrumenter @JvmOverloads constructor(
 
             apkContentManager = ApkContentManager(apk.path, apkToolDir, workDir)
             // apkContentManager.installFramework(true)
-            apkContentManager.extractApk(true)
+            apkContentManager.extractApk(true, resource = addPermission)
 //            // apkContentManager.deleteMANIFESTMF()
             // Add internet permission
             Helper.initializeManifestInfo(apk.path.toString())
 //          apkContentManager.changeMinSdkVersion()
             // The apk will need internet permissions to make sure that the TCP communication works
             if (!Helper.hasPermission(ManifestConstants.PERMISSION_INET)) {
-                // apkContentManager.addPermissionsToApp(ManifestConstants.PERMISSION_INET)
+                apkContentManager.addPermissionsToApp(ManifestConstants.PERMISSION_INET)
             } /*else {
                 Files.copy(apk.path, tmpOutApk)
             }*/
@@ -284,7 +297,7 @@ public class Instrumenter @JvmOverloads constructor(
         }
     }
 
-    private fun buildNewApk(orginalApkPath: Path, instrumentedApk: Path  ,apkToolDir: Path, workDir: Path): Path {
+    private fun buildNewApk(orginalApkPath: Path, instrumentedApk: Path, apkToolDir: Path, workDir: Path): Path {
         val orginalApkDir = workDir.resolve("original")
         var originalApkManager = ApkContentManager(orginalApkPath, orginalApkDir, workDir)
         originalApkManager.extractApk(true, false)
@@ -366,7 +379,7 @@ public class Instrumenter @JvmOverloads constructor(
         return signedApk
     }
 
-      private fun creatPathFromClass(c: String): String {
+    private fun creatPathFromClass(c: String): String {
         val splitStrings = c.split(".")
         var stringPath = ""
         splitStrings.take(splitStrings.size - 1).forEach { s ->
@@ -417,6 +430,9 @@ public class Instrumenter @JvmOverloads constructor(
             Options.v().set_exclude(getLibraryPackage())
             Options.v().set_include(arrayListOf(packageName + ".*"))
         }
+        Resource("lifecycle_methods.txt").extractTo(stagingDir)
+        val lifeCycleMethodsFile = stagingDir.resolve("lifecycle_methods.txt").toString()
+        processLifeCycleMethod(lifeCycleMethodsFile)
         processDirs.add(resourceDir.toString())
 
         // Consider using multiplex, but it crashed for some apps
@@ -425,6 +441,7 @@ public class Instrumenter @JvmOverloads constructor(
         Options.v().set_android_jars("ANDROID_HOME".asEnvDir.resolve("platforms").toString())
         Options.v().set_force_overwrite(true)
         Options.v().set_android_api_version(28)
+
         Scene.v().loadNecessaryClasses()
 
 //        log.info("Excluded libraries count: ${Options.v().exclude().size} ${Options.v().exclude()[0]}")
@@ -441,6 +458,16 @@ public class Instrumenter @JvmOverloads constructor(
         )
         helperSootClasses = helperClasses
             .map { Scene.v().getSootClass("${Runtime.PACKAGE}.$it") }
+    }
+
+    private fun processLifeCycleMethod(lifeCycleMethodsFile: String) {
+        val file = File(lifeCycleMethodsFile)
+        if (!file.exists())
+            return
+        val lines = file.readLines()
+        for (line in lines) {
+            lifeCycleMethodSubSigs.add(line)
+        }
     }
 
     private fun IApk.instrumentWithSoot(sootDir: Path): Path {
@@ -487,6 +514,11 @@ public class Instrumenter @JvmOverloads constructor(
             private var classCounter: Long = 0
             private val refinedPackageName = refinePackageName(apk)
             private var statementCounter: Long = 0
+            private val lambdaClassToMethod = HashMap<SootClass, Long>()
+            private val unlinkedLambdaMethods = HashMap<SootMethod, Long>()
+            private val processedClasses = HashMap<SootClass, Long>()
+            //
+
             private val mutex = Mutex()
             override fun internalTransform(b: Body, phaseName: String, options: MutableMap<String, String>) {
                 val units = b.units
@@ -494,24 +526,6 @@ public class Instrumenter @JvmOverloads constructor(
                     mutex.withLock {
                         val methodSig = b.method.signature
 
-                        // Debug
-/*                        if (b.method.declaringClass.name.contains("firebase-perf.zzz")) {
-                            val iterator = units.snapshotIterator()
-                            while (iterator.hasNext()) {
-                                val u = iterator.next()
-                                // Instrument statements
-                                if (u !is JIdentityStmt) {
-                                    if (u is DefinitionStmt) {
-                                        log.info(u?.toString() + " (DefinitionStmt) : " + (u as DefinitionStmt).leftOp.type.toString() + " = " + (u as DefinitionStmt).rightOp.type.toString() + "(" + (u as DefinitionStmt).rightOp.javaClass +")")
-                                        //  && (u as DefinitionStmt).leftOp.type.toString()
-                                        //  + " : " + (u as DefinitionStmt).leftOp.type.toString()
-                                    } else {
-                                        log.info(u?.toString())
-                                    }
-                                }
-                            }
-                        }*/
-                        // End Debug
                         // Important to use snapshotIterator here
                         // Skip if the current class is one of the classes we use to instrument the coverage
                         if (!helperSootClasses.any { b.method.declaringClass.name.contains(it.name) } &&
@@ -522,6 +536,7 @@ public class Instrumenter @JvmOverloads constructor(
                                     val classId = classCounter++
                                     allpackageClasses[classId] = b.method.declaringClass.name
                                     allClasses[classId] = b.method.declaringClass.name
+                                    processedClasses.put(b.method.declaringClass, classId)
                                 }
                             }
 
@@ -530,8 +545,6 @@ public class Instrumenter @JvmOverloads constructor(
                             ) {
                                 // Perform instrumentation here
 
-                                // log.info("Method $methodSig:")
-
                                 var methodUuid: UUID? = null
                                 if (methodUuid == null) {
                                     methodUuid = UUID.randomUUID()
@@ -539,6 +552,21 @@ public class Instrumenter @JvmOverloads constructor(
                                 val methodId = methodCounter
                                 var methodInfo = "$methodSig uuid=$methodUuid"
                                 allMethods.put(methodId, methodInfo)
+                                var isLambda = b.method.declaringClass.tags.any { it is SourceFileTag && it.sourceFile == "lambda" }
+                                if (isLambda) {
+                                    val lambdaClass = b.method.declaringClass
+                                    if (lambdaClassToMethod.containsKey(lambdaClass)) {
+                                        // This lambda class was triggered by a processed method
+                                        val outerMethodId = lambdaClassToMethod[lambdaClass]!!
+                                        lambdaMethodToMethod[methodId] = outerMethodId
+                                    } else {
+                                        // The method triggering this lambda class has not been processed
+                                        unlinkedLambdaMethods.put(b.method, methodId)
+                                    }
+                                }
+                                var rightAfterIdentiyStmt = true
+                                val isActivity = Scene.v().activeHierarchy.isClassSubclassOf(b.method.declaringClass,Scene.v().getSootClass("android.app.Activity"))
+                                val isLifeCycleMethod = lifeCycleMethodSubSigs.contains(b.method.subSignature)
                                 val iterator = units.snapshotIterator()
                                 while (iterator.hasNext()) {
                                     val u = iterator.next()
@@ -546,6 +574,11 @@ public class Instrumenter @JvmOverloads constructor(
                                     val uuid = UUID.randomUUID()
                                     // Instrument statements
                                     if (u !is JIdentityStmt) {
+                                        if (rightAfterIdentiyStmt && isActivity && isLifeCycleMethod) {
+                                            rightAfterIdentiyStmt = false
+                                            val methodLogStatement = runtime.makeCallToMethodLogPoint(methodSig, 0)
+                                            units.insertBefore(methodLogStatement, u)
+                                        }
 //                                        if (u is DefinitionStmt) {
 //                                            log.info(u?.toString() + " (DefinitionStmt in $methodSig) : " + (u as DefinitionStmt).leftOp.type.toString() + " = " + (u as DefinitionStmt).rightOp.type.toString() )
 //                                            //  && (u as DefinitionStmt).leftOp.type.toString()
@@ -562,6 +595,12 @@ public class Instrumenter @JvmOverloads constructor(
                                             runtime.makeCallToStatementPoint("$u methodId=$methodUuid uuid=$uuid", 0)
                                         // log.info("Insert statement point call: $logStatement")
                                         units.insertBefore(logStatement, u)
+                                        if (u is JNewExpr) {
+                                            processifNewStmtLambdaClass(u, methodId)
+                                        } else if (u is DefinitionStmt && u.rightOp is JNewExpr) {
+                                            processifNewStmtLambdaClass(u.rightOp as JNewExpr, methodId)
+                                        }
+
                                         counter++
                                     }
                                 }
@@ -571,6 +610,28 @@ public class Instrumenter @JvmOverloads constructor(
                                 }
                             }
                             b.validate()
+                        }
+                    }
+                }
+            }
+
+            private fun processifNewStmtLambdaClass(u: JNewExpr, methodId: Long) {
+                if (u.type is RefType) {
+                    val newSootClass = (u.type as RefType).sootClass
+                    if (newSootClass.tags.any { it is SourceFileTag && it.sourceFile == "lambda" }) {
+                        val lambdaClass = newSootClass
+                        if (!processedClasses.containsKey(lambdaClass)) {
+                            val classId = classCounter++
+                            allpackageClasses[classId] = lambdaClass.name
+                            allClasses[classId] = lambdaClass.name
+                            lambdaClassToMethod.put(lambdaClass, methodId)
+                        }
+                        val unlinkedLamdaMethodOfthisClass =
+                            unlinkedLambdaMethods.filter { it.key.declaringClass == lambdaClass }
+                        unlinkedLamdaMethodOfthisClass.forEach {
+                            if (it.value != methodId)
+                                lambdaMethodToMethod.put(it.value, methodId)
+                            unlinkedLambdaMethods.remove(it.key)
                         }
                     }
                 }
@@ -683,7 +744,6 @@ public class Instrumenter @JvmOverloads constructor(
         body.validate()
     }
 
-
     /**
      * In the package has more than 2 parts, it returns the 2 first parts
      * @param apk Apk to extract the package name
@@ -702,7 +762,6 @@ public class Instrumenter @JvmOverloads constructor(
             apk.packageName
     }
 
-
     @Throws(IOException::class)
     private fun writeInstrumentationList(apk: IApk, outputDir: Path): Path {
         val outputMap = HashMap<String, Any>()
@@ -710,6 +769,20 @@ public class Instrumenter @JvmOverloads constructor(
         outputMap["allStatements"] = allStatements
         outputMap["allMethods"] = allMethods
         outputMap["allClassese"] = allClasses
+        outputMap["lambdaMethodToMethod"] = lambdaMethodToMethod
+        // for debug
+        val methodToLambdaMethods = HashMap<String, ArrayList<String>>()
+        lambdaMethodToMethod.forEach { lamdaMethodId, outerMethodId ->
+            val lambdaMethod = allMethods[lamdaMethodId]!!
+            val outerMethod = allMethods[outerMethodId]!!
+            if (!methodToLambdaMethods.containsKey(outerMethod)) {
+                methodToLambdaMethods[outerMethod] = ArrayList()
+            }
+            methodToLambdaMethods[outerMethod]!!.add(lambdaMethod)
+        }
+        outputMap["methodToLambdaMethods"] = methodToLambdaMethods
+
+        // end dedug
         // outputMap["allPackageClasses"] = allpackageClasses
         val instrumentResultFile = outputDir.resolve("${apk.fileName}$INSTRUMENTATION_FILE_SUFFIX")
         val resultJson = JSONObject(outputMap)

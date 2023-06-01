@@ -70,6 +70,12 @@ public class Runtime {
 		}
 	}
 
+	public static void methodLogPoint(String method, String portFilePath,int print) {
+		if (!initialized)
+			initialize(portFilePath);
+		log.info("DM2Coverage: Called method: " + method);
+	}
+
 	public static void addCurrentWidgetPoint(int resourceId, String resourceIdName, String portFilePath, int print)
 	{
 		synchronized (currentWidgetIds) {
@@ -130,7 +136,7 @@ public class Runtime {
 
 	@SuppressWarnings("ConstantConditions")
 	private static org.droidmate.runtime.MonitorTcpServer startMonitorTCPServer(String portFilePath) throws Throwable {
-		log.info("startMonitorTCPServer(): entering");
+		log.info("java.net.SocketException: Permission denied(): entering");
 		org.droidmate.runtime.MonitorTcpServer tcpServer
 				= new org.droidmate.runtime.MonitorTcpServer(currentStatements, currentActivity, currentWidgetIds);
 
@@ -151,4 +157,6 @@ public class Runtime {
 		log.info("startMonitorTCPServer(): SUCCESS portUsed: " + portUsed);
 		return tcpServer;
 	}
+
+
 }

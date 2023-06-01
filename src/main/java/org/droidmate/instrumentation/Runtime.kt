@@ -47,6 +47,8 @@ class Runtime private constructor(private val portFile: Path) {
 
     private val statementPointMethod = Suppliers.memoize { getRuntimeClass().getMethodByName("statementPoint") }
 
+    private val methodLogMethod = Suppliers.memoize { getRuntimeClass().getMethodByName("methodLogPoint") }
+
     private val addCurrentWidgetPointMethod = Suppliers.memoize { getRuntimeClass().getMethodByName("addCurrentWidgetPoint") }
 
     private val setCurrentActivityPointMethod = Suppliers.memoize { getRuntimeClass().getMethodByName("setCurrentActivityPoint") }
@@ -63,7 +65,9 @@ class Runtime private constructor(private val portFile: Path) {
     private fun getStatementPointMethod(): SootMethod {
         return statementPointMethod.get()
     }
-
+    private fun getMethodLogMethod(): SootMethod {
+        return methodLogMethod.get()
+    }
     private fun getAddCurrentWidgetPointMethod(): SootMethod {
         return addCurrentWidgetPointMethod.get()
     }
@@ -81,7 +85,14 @@ class Runtime private constructor(private val portFile: Path) {
                 StringConstant.v(portFile.toString()),
                 IntConstant.v(printToLogcat)))
     }
-
+    fun makeCallToMethodLogPoint(method: String, printToLogcat: Int): InvokeStmt {
+        return Jimple.v().newInvokeStmt(
+            Jimple.v().newStaticInvokeExpr(
+                this.getMethodLogMethod().makeRef(),
+                StringConstant.v(method),
+                StringConstant.v(portFile.toString()),
+                IntConstant.v(printToLogcat)))
+    }
     fun makeCallToAddCurrentWidgetPoint(resourceId: Int, view: String, printToLogcat: Int): InvokeStmt {
         return Jimple.v().newInvokeStmt(
             Jimple.v().newStaticInvokeExpr(

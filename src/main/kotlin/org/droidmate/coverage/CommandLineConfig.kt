@@ -25,4 +25,6 @@ object CommandLineConfig {
     val packageName by stringType
     val useAppt2 by booleanType
     val replaceMonitorServer by booleanType
+    val addInternetPermission by booleanType
+    val logLifeCycleMethod by booleanType
 }
