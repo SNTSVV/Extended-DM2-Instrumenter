@@ -17,7 +17,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.droidmate.ApkContentManager
-import org.droidmate.Hierarchy
 import org.droidmate.coverage.CommandLineConfig.apk
 import org.droidmate.coverage.CommandLineConfig.onlyAppPackage
 import org.droidmate.coverage.CommandLineConfig.outputDir
@@ -248,8 +247,6 @@ public class Instrumenter @JvmOverloads constructor(
             allClasses.clear()
             allpackageClasses.clear()
             lambdaMethodToMethod.clear()
-
-            val packageFile = Files.list(apk.path.parent).filter { it.fileName.toString().contains(apk.packageName) && it.fileName.toString().endsWith("-package.txt") }.findFirst().orElse(null)
 
             val apkToolDir = workDir.resolve("apkTool")
             Files.createDirectories(apkToolDir)
@@ -565,7 +562,7 @@ public class Instrumenter @JvmOverloads constructor(
                                     }
                                 }
                                 var rightAfterIdentiyStmt = true
-                                val isActivity = Scene.v().activeHierarchy.isClassSubclassOf(b.method.declaringClass,Scene.v().getSootClass("android.app.Activity"))
+                                val isActivity = Scene.v().activeHierarchy.isClassSubclassOf(b.method.declaringClass, Scene.v().getSootClass("android.app.Activity"))
                                 val isLifeCycleMethod = lifeCycleMethodSubSigs.contains(b.method.subSignature)
                                 val iterator = units.snapshotIterator()
                                 while (iterator.hasNext()) {
@@ -586,7 +583,6 @@ public class Instrumenter @JvmOverloads constructor(
 //                                        }
 //                                        // check the statement invoke findViewById function
 //                                        else log.info(u?.toString())
-                                        var viewId = ""
                                         val id = counter
                                         // instrumentFindViewById(u, b)
                                         allStatements[id] = "$u methodId=$methodUuid uuid=$uuid"
@@ -723,7 +719,7 @@ public class Instrumenter @JvmOverloads constructor(
         method.activeBody = body
         body.insertIdentityStmts()
         var invokeStmt: InvokeStmt? = null
-        var superClass: SootClass = declaringClass.superclass
+        var superClass: SootClass? = declaringClass.superclass
         while (superClass != null) {
             if (superClass.declaresMethod(method.subSignature)) {
                 val parentMethodRef = superClass.getMethod(method.subSignature).makeRef()
