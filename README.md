@@ -1,4 +1,4 @@
-## This repository is part of the [ATUA] project
+## This repository is part of the [ATUA](https://github.com/SNTSVV/ATUA) project
 
 #### The project originally by DroidMate-2 (https://github.com/uds-se/droidmate-coverage)
 
