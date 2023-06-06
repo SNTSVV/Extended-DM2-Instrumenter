@@ -1,1 +1,1 @@
---useAppt2=false --packageName=de.rampro.activitydiary
+--useAppt2=false
